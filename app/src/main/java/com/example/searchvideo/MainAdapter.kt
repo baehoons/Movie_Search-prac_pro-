@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.searchvideo.util.PicassoTransformations
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_main.view.*
 
@@ -19,7 +20,7 @@ class MainAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     ) {
         fun onBind(item:VideoItem){
             itemView.run {
-                Picasso.with(context).load(item.VideoUrl).placeholder(R.drawable.ic_image_black_24dp).into(video_view)
+                Picasso.with(context).load(item.VideoUrl).placeholder(R.drawable.ic_image_black_24dp).resize(800,700).into(video_view)
                 video_view.setOnClickListener {
                     ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse(item.documentUrl)), null)
                 }

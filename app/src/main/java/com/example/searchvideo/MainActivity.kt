@@ -27,9 +27,11 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     override fun initStartView() {
 
+//        ApiKakaoSearchService.rxGetVideoClip()
+
         recycler_view.run {
             adapter = mainAdapter
-            layoutManager = StaggeredGridLayoutManager(6,1).apply{
+            layoutManager = StaggeredGridLayoutManager(2,1).apply{
                 gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
                 orientation = StaggeredGridLayoutManager.VERTICAL
             }
@@ -43,8 +45,8 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
         viewModel.videoSearchPersonLiveData.observe(this, Observer {
             it.documents.forEach { document ->
                 //val url2:String = document.thumbnail+".jpg"
-                val ss:String = document.thumbnail
-                mainAdapter.addVideoItem(ss,document.url)
+
+                mainAdapter.addVideoItem(document.thumbnail,document.url)
             }
             mainAdapter.notifyDataSetChanged()
         })
@@ -52,7 +54,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     override fun initAfterBinding() {
         main_activity_search_button.setOnClickListener{
-            viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,80)
+            viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
         }
     }
 }

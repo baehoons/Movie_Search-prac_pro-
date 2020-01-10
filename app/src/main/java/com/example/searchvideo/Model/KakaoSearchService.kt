@@ -6,7 +6,7 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 
 interface KakaoSearchService {
-    @GET("/v2/search/vclip")
+    @GET("v2/search/vclip")
     fun searchVideo(
         @Header("Authorization") auth:String,
         @Query("query") query:String,

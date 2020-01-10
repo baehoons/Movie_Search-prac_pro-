@@ -1,10 +1,5 @@
 package com.example.searchvideo
 
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.searchvideo.Base.BaseActivity_ko
@@ -13,11 +8,13 @@ import com.example.searchvideo.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.android.ext.android.inject
-import java.io.ByteArrayOutputStream
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
+import android.util.Log
+import com.gmail.ayteneve93.api.kakao.ApiKakaoSearchService
+import com.gmail.ayteneve93.api.kakao.ApiKakaoVideoSearchDataModels
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
@@ -29,6 +26,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
     private val mainAdapter:MainAdapter by inject()
 
     override fun initStartView() {
+
         recycler_view.run {
             adapter = mainAdapter
             layoutManager = StaggeredGridLayoutManager(6,1).apply{

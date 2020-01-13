@@ -1,5 +1,7 @@
 package com.example.searchvideo.Model
 
+import java.io.Serializable
+
 data class VideoSearchResponse(
     var meta:Meta,
     var documents:ArrayList<Document>
@@ -17,6 +19,6 @@ data class VideoSearchResponse(
         var thumbnail:String,
         var author:String
 
-    )
+    ) :Serializable
 
 }

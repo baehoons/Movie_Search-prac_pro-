@@ -1,5 +1,7 @@
 package com.example.searchvideo.Base
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.example.searchvideo.util.SnackbarMessage
@@ -7,7 +9,7 @@ import com.example.searchvideo.util.SnackbarMessageString
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-open class BaseViewModel :ViewModel(){
+open class BaseViewModel(application: Application) :AndroidViewModel(application){
     private val snackbarMessage = SnackbarMessage()
     private val snackbarMessageString = SnackbarMessageString()
 

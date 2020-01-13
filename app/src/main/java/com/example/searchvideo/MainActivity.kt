@@ -1,36 +1,302 @@
 package com.example.searchvideo
 
+import android.app.Activity
+import android.app.SearchManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.database.Cursor
+import android.os.Handler
+import android.provider.SearchRecentSuggestions
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.searchvideo.Base.BaseActivity_ko
+import com.example.searchvideo.Controller.VideoOperationController
+import com.example.searchvideo.Model.KakaoSearchSortEnum
+import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.ViewModel.MainViewModel
 import com.example.searchvideo.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.searchvideo.util.PreferenceUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.android.ext.android.inject
-import android.util.Log
-import com.gmail.ayteneve93.api.kakao.ApiKakaoSearchService
-import com.gmail.ayteneve93.api.kakao.ApiKakaoVideoSearchDataModels
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import java.text.SimpleDateFormat
+import com.mancj.materialsearchbar.MaterialSearchBar
 import java.util.*
 
 
 class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
+    private val mMainViewModel : MainViewModel by viewModel()
+    private lateinit var mMainFragmentState: MainFragmentState
+    private val mVideoOperationController:VideoOperationController by inject()
+    private lateinit var mFragmentManager: FragmentManager
+    private lateinit var mVideoListFragment: ListFragment
+    private var mBackButtonEnabledFromDetail = true
+    private var mAppTerminateConfirmFlag = false
+    private lateinit var mSearchView : SearchView
+    private lateinit var mScaleGestureDetector : ScaleGestureDetector
+    private val mAppTerminateConfirmHandler = Handler()
+    private val mPreferenceUtils : PreferenceUtils by inject()
+    private var mIsSearchViewShownAtFirstTime = false
+
+    private val mMainBroadcastReceiver = object : BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                it.action?.let {
+                        actionString ->
+                        intent.getStringExtra(MainBroadcastPreference.Target.KEY)?.let {
+                            when(actionString){
+
+                                MainBroadcastPreference.Action.VIDEO_ITEM_CLICKED->{
+                                    showDetailFragment(intent.getSerializableExtra(MainBroadcastPreference.Extra.VideoItem.KEY) as VideoSearchResponse.Document)
+                                }
+
+                                MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT -> {
+                                    mMainFragmentState = MainFragmentState.VIDEO_LIST
+                                    super@MainActivity.onBackPressed()
+                                }
+                                MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED -> {
+                                    when(intent.getSerializableExtra(MainBroadcastPreference.Extra.VideoItem.KEY)) {
+                                        MainBroadcastPreference.Extra.VideoOperation.PreDefinedValues.SHARE -> {
+                                            this@MainActivity.startActivity(
+                                                Intent.createChooser(intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT), "어디에 공유 하시겠습니까?"))
+                                        }
+                                        MainBroadcastPreference.Extra.VideoOperation.PreDefinedValues.DOWNLOAD -> {
+                                            Toast.makeText(this@MainActivity,"다운로드 완료", Toast.LENGTH_LONG).show()
+                                            mVideoOperationController.clearDisposable()
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+
+                }
+            }
+        }
+
+    }
+
+
+    override fun setUp() {
+        setBroadcastReceiver()
+        setToolBar()
+        searchbar()
+        setFragmentManager()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mVideoOperationController.clearSharedDriectory()
+    }
+
+    private fun setBroadcastReceiver(){
+        registerReceiver(mMainBroadcastReceiver, IntentFilter().also {
+            arrayOf(
+                MainBroadcastPreference.Action.VIDEO_ITEM_CLICKED,
+                MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT,
+                MainBroadcastPreference.Action.VIDEO_ITEM_SELECTION_MODE_CHANGED,
+                MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED
+                //MainBroadcastPreference.Action.CHECK_IMAGE_OPERATION_PROCEEDING_WHEN_WIFI_DISCONNECTED
+            ).forEach {
+                eachAction ->
+                it.addAction(eachAction)
+            }
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(mMainBroadcastReceiver)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main_app_bar,menu)
+        val searchManager : SearchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+
+        val suggestions = SearchRecentSuggestions(this,MainRecentSearchSuggestionsProvider.AUTHORITY,
+            MainRecentSearchSuggestionsProvider.MODE)
+
+        mSearchView = menu!!.findItem(R.id.menuMainAppBarSearch).actionView as SearchView
+        mSearchView.apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            queryHint = "Image Search"
+            setOnQueryTextFocusChangeListener{
+                _, isFocused ->
+                mMainViewModel.mFragmentVisibility.set(!isFocused)
+            }
+            setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    (getSystemService(Activity.INPUT_METHOD_SERVICE)as InputMethodManager).hideSoftInputFromWindow((currentFocus?:View(this@MainActivity)).windowToken,0)
+                    this@apply.onActionViewCollapsed()
+                    if(mMainFragmentState == MainFragmentState.VIDEO_DETAIL) onBackPressed()
+                    sendBroadcast(Intent().apply {
+                        action = MainBroadcastPreference.Action.NEW_SEARCH_QUERY_INPUT
+                        putExtra(MainBroadcastPreference.Target.KEY,MainBroadcastPreference.Target.PreDefinedValues.VIDEO_LIST)
+                        putExtra(MainBroadcastPreference.Extra.QueryString.KEY,query)
+                    })
+                    suggestions.saveRecentQuery(query,null)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean = newText?.isNotEmpty()?:false
+            })
+            setOnSuggestionListener(object : SearchView.OnSuggestionListener {
+                override fun onSuggestionSelect(position: Int): Boolean = true
+                override fun onSuggestionClick(position: Int): Boolean {
+                    val cursor = suggestionsAdapter.getItem(position) as Cursor
+                    val index = cursor.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1)
+                    setQuery(cursor.getString(index), true)
+                    return true
+                }
+            })
+            setOnCloseListener { false }
+            isQueryRefinementEnabled = true
+            if(!mIsSearchViewShownAtFirstTime) {
+                isIconified = false
+                requestFocus(0)
+                mIsSearchViewShownAtFirstTime = true
+            }
+        }
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        when(mPreferenceUtils.getSortOption()) {
+            KakaoSearchSortEnum.Accuracy -> menu!!.findItem(R.id.menuMainAppBarSortByAccuracy).isChecked = true
+            KakaoSearchSortEnum.Recency -> menu!!.findItem(R.id.menuMainAppBarSortByRecency).isChecked = true
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menuMainAppBarSortByAccuracy ->{
+                mPreferenceUtils.setSortOption(KakaoSearchSortEnum.Accuracy)
+                sendBroadcast(Intent().apply {
+                    action = MainBroadcastPreference.Action.SORT_OPTION_CHANGED
+                    putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.VIDEO_LIST)
+                    putExtra(MainBroadcastPreference.Extra.SortOption.KEY, KakaoSearchSortEnum.Accuracy)
+                })
+            }
+            R.id.menuMainAppBarSortByRecency -> {
+                mPreferenceUtils.setSortOption(KakaoSearchSortEnum.Recency)
+                sendBroadcast(Intent().apply {
+                    action = MainBroadcastPreference.Action.SORT_OPTION_CHANGED
+                    putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.VIDEO_LIST)
+                    putExtra(MainBroadcastPreference.Extra.SortOption.KEY, KakaoSearchSortEnum.Recency)
+                })
+            }
+            R.id.menuMainAppBarClearSearchHistory -> {
+                SearchRecentSuggestions(this, MainRecentSearchSuggestionsProvider.AUTHORITY,
+                    MainRecentSearchSuggestionsProvider.MODE).clearHistory()
+            }
+        }
+        return false
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if(::mScaleGestureDetector.isInitialized) mScaleGestureDetector.onTouchEvent(ev)
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onBackPressed() {
+        if(!mSearchView.isIconified){
+            mSearchView.onActionViewCollapsed()
+            return
+        }
+        if(mMainFragmentState == MainFragmentState.VIDEO_LIST){
+            if(mBackButtonEnabledFromDetail) {
+                sendBroadcast(Intent().apply {
+                    action = MainBroadcastPreference.Action.BACK_BUTTON_PRESSED
+                    putExtra(
+                        MainBroadcastPreference.Target.KEY,
+                        MainBroadcastPreference.Target.PreDefinedValues.VIDEO_LIST
+                    )
+                })
+            }
+            return
+        }
+
+        if(mMainFragmentState == MainFragmentState.VIDEO_DETAIL){
+            if(mBackButtonEnabledFromDetail) {
+                sendBroadcast(Intent().apply {
+                    action = MainBroadcastPreference.Action.BACK_BUTTON_PRESSED
+                    putExtra(
+                        MainBroadcastPreference.Target.KEY,
+                        MainBroadcastPreference.Target.PreDefinedValues.VIDEO_DETAIL
+                    )
+                })
+            }
+            return
+        }
+    }
+
+    private fun finishApplication() {
+        if(!mAppTerminateConfirmFlag) {
+            Toast.makeText(this, "If you want quit one more press", Toast.LENGTH_LONG).show()
+            mAppTerminateConfirmFlag = true
+            mAppTerminateConfirmHandler.removeCallbacksAndMessages(null)
+            mAppTerminateConfirmHandler.postDelayed({
+                mAppTerminateConfirmFlag = false
+            }, 3000)
+            return
+        }
+        finish()
+    }
+
+    private fun setFragmentManager(){
+        mMainFragmentState = MainFragmentState.VIDEO_LIST
+        mFragmentManager = supportFragmentManager
+        mVideoListFragment = ListFragment.newInstance()
+        mFragmentManager
+            .beginTransaction()
+            .add(viewDataBinding.mainFragmentContainer.id,mVideoListFragment)
+            .show(mVideoListFragment)
+            .commit()
+    }
+
+    private fun showDetailFragment(videoModel:VideoSearchResponse.Document){
+        mMainFragmentState = MainFragmentState.VIDEO_DETAIL
+        val videoDetailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
+        mFragmentManager
+            .beginTransaction()
+            //.setCustomAnimations()
+            .hide(mVideoListFragment)
+            .add(viewDataBinding.mainFragmentContainer.id, videoDetailFragment)
+            .show(videoDetailFragment)
+            .addToBackStack(null)
+            .commit()
+        mBackButtonEnabledFromDetail = false
+        Handler().postDelayed({mBackButtonEnabledFromDetail = true}, 500)
+
+
+    }
+
+
+    internal var suggestList:MutableList<String> = ArrayList()
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main
     override val viewModel: MainViewModel by viewModel()
 
-    private val mainAdapter:MainAdapter by inject()
+    private val listAdapter:ListAdapter by inject()
+
+
 
     override fun initStartView() {
 
-//        ApiKakaoSearchService.rxGetVideoClip()
 
         recycler_view.run {
-            adapter = mainAdapter
+            adapter = listAdapter
             layoutManager = StaggeredGridLayoutManager(2,1).apply{
                 gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
                 orientation = StaggeredGridLayoutManager.VERTICAL
@@ -46,15 +312,60 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
             it.documents.forEach { document ->
                 //val url2:String = document.thumbnail+".jpg"
 
-                mainAdapter.addVideoItem(document.thumbnail,document.url)
+                listAdapter.addVideoItem(document.thumbnail,document.url)
             }
-            mainAdapter.notifyDataSetChanged()
+            listAdapter.notifyDataSetChanged()
         })
     }
 
     override fun initAfterBinding() {
-        main_activity_search_button.setOnClickListener{
-            viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
+//        main_activity_search_button.setOnClickListener{
+//            viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
+//        }
+    }
+
+    private fun setToolBar() {
+        setSupportActionBar(viewDataBinding.mainToolbar)
+        supportActionBar?.let {
+            it.setDisplayShowHomeEnabled(true)
+            it.setIcon(R.drawable.ic_search_black_24dp)
+            it.title="  영상 검색"
         }
+    }
+
+    private fun searchbar(){
+        main_activity_search_text_view.setCardViewElevation(10)
+        main_activity_search_text_view.addTextChangeListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val suggest = ArrayList<String>()
+                for(search_term in suggestList)
+                    if(search_term.toLowerCase().contentEquals(main_activity_search_text_view.text.toLowerCase()))
+                        suggest.add(search_term)
+                main_activity_search_text_view.lastSuggestions = suggest
+            }
+
+        })
+        main_activity_search_text_view.setOnSearchActionListener(object:MaterialSearchBar.OnSearchActionListener{
+            override fun onButtonClicked(buttonCode: Int) {
+
+            }
+
+            override fun onSearchStateChanged(enabled: Boolean) {
+
+            }
+
+            override fun onSearchConfirmed(text: CharSequence?) {
+                viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
+            }
+
+        })
     }
 }

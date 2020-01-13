@@ -1,15 +1,19 @@
 package com.example.searchvideo.Base
 
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import androidx.fragment.app.Fragment
 
-abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCompatActivity() {
+abstract class BaseFragment <T : ViewDataBinding, R : BaseViewModel> : Fragment() {
 
     lateinit var viewDataBinding: T
+    protected var mActivity: BaseActivity_ko<*, *>? = null
 
     /**
      * setContentView로 호출할 Layout의 리소스 Id.
@@ -46,29 +50,35 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
 
     abstract fun setUp()
 
-    private var isSetBackButtonValid = false
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is BaseActivity_ko<*,*>){
+            mActivity = context
+        }
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?): View? {
+        viewDataBinding = DataBindingUtil.inflate(inflater,layoutResourceId,container,false)
+        return viewDataBinding.root
+    }
 
-        viewDataBinding = DataBindingUtil.setContentView(this, layoutResourceId)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewDataBinding.lifecycleOwner = this
         viewDataBinding.executePendingBindings()
         setUp()
-        snackbarObserving()
-        initStartView()
-        initDataBinding()
-        initAfterBinding()
     }
 
-    private fun snackbarObserving() {
-        viewModel.observeSnackbarMessage(this) {
-            Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
-        }
-        viewModel.observeSnackbarMessageStr(this){
-            Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
-        }
+    fun getBaseActivity() : BaseActivity_ko<*, *>? {
+        return mActivity
     }
 
-
+    /** 상위 액티비티와의 연결을 제거합니다. */
+    override fun onDetach() {
+        mActivity = null
+        super.onDetach()
+    }
 }

@@ -92,7 +92,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
         <com.linroid.filtermenu.library.FilterMenuLayout
-            android:id="@+id/imageListFilterMenu"
+            android:id="@+id/videoListFilterMenu"
             app:fm_expandedRadius="100dp"
             app:fm_collapsedRadius="30dp"
             app:fm_centerBottom="50dp"
@@ -109,10 +109,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/videoListRecyclerContainerConstraint">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ListRecyclerView"
+            <jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout
+                android:id="@+id/videoListRefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="0dp">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </androidx.recyclerview.widget.RecyclerView>
+            </jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

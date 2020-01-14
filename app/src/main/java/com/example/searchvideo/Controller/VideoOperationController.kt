@@ -19,6 +19,8 @@ import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.R
 import com.example.searchvideo.util.ConstantUtils
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -66,9 +68,9 @@ class VideoOperationController ( private val application: Application ) {
 
     fun clearVideoModels() = mImageModelMap.clear()
 
-//    fun startShare() = checkPermsiionAndLoadImagesForOperation(VideoOpertation.SHARE)
+    fun startShare() = checkPermsiionAndLoadImagesForOperation(VideoOpertation.SHARE)
 //
-//    fun startDownload() = checkPermsiionAndLoadImagesForOperation(VideoOpertation.DOWNLOAD)
+    fun startDownload() = checkPermsiionAndLoadImagesForOperation(VideoOpertation.DOWNLOAD)
 
     fun clearSharedDriectory() {
         if (mIsImageOnSharing) {
@@ -96,53 +98,53 @@ class VideoOperationController ( private val application: Application ) {
         } else mClonedImageModelMap.clear()
     }
 
-//    private fun checkPermsiionAndLoadImagesForOperation(videoOperation: VideoOpertation) {
-//        mImageModelMap.forEach { mClonedImageModelMap[it.key] = it.value}
-//        TedPermission.with(application)
-//            .setPermissionListener(object : PermissionListener {
-//                override fun onPermissionGranted() {
-//                    with((application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)) {
-//                        activeNetworkInfo.let {
-//                                networkInfo ->
-//                            if(networkInfo == null) {
-//                                preProcessRejected()
-//                                return
-//                            }
-//                            val isWifiConnected : Boolean = with((application.getSystemService(
-//                                Context.WIFI_SERVICE) as WifiManager)) {
-//                                isWifiEnabled && connectionInfo.networkId != -1
-//                            }
-//                            if(isWifiConnected) loadImageTo(imageOperation)
-//                            else {
-//                                application.sendBroadcast(Intent().apply {
-//                                    action = MainBroadcastPreference.Action.CHECK_IMAGE_OPERATION_PROCEEDING_WHEN_WIFI_DISCONNECTED
-//                                    putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
-//                                    putExtra(MainBroadcastPreference.Extra.ImageOperation.KEY, when(imageOperation) {
-//                                        ImageOperation.SHARE -> MainBroadcastPreference.Extra.ImageOperation.PreDefinedValues.SHARE
-//                                        ImageOperation.DOWNLOAD -> MainBroadcastPreference.Extra.ImageOperation.PreDefinedValues.DOWNLOAD
-//                                    })
-//                                })
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-//                    preProcessRejected()
-//                }
-//
-//                private fun preProcessRejected() {
-//                    Toast.makeText(application, R.string.txt_image_operation_failed, Toast.LENGTH_LONG).show()
-//                    mClonedImageModelMap.clear()
-//                }
-//
-//            })
-//            .setRationaleMessage(R.string.permission_external_storage_rational_message)
-//            .setDeniedMessage(R.string.permission_external_storage_denied_message)
-//            .setGotoSettingButton(true)
-//            .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//            .check()
-//    }
+    private fun checkPermsiionAndLoadImagesForOperation(videoOperation: VideoOpertation) {
+        mImageModelMap.forEach { mClonedImageModelMap[it.key] = it.value}
+        TedPermission.with(application)
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    with((application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)) {
+                        activeNetworkInfo.let {
+                                networkInfo ->
+                            if(networkInfo == null) {
+                                preProcessRejected()
+                                return
+                            }
+                            val isWifiConnected : Boolean = with((application.getSystemService(
+                                Context.WIFI_SERVICE) as WifiManager)) {
+                                isWifiEnabled && connectionInfo.networkId != -1
+                            }
+                            if(isWifiConnected) loadImageTo(videoOperation)
+                            else {
+                                application.sendBroadcast(Intent().apply {
+                                    action = MainBroadcastPreference.Action.CHECK_IMAGE_OPERATION_PROCEEDING_WHEN_WIFI_DISCONNECTED
+                                    putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
+                                    putExtra(MainBroadcastPreference.Extra.VideoOperation.KEY, when(videoOperation) {
+                                        VideoOpertation.SHARE -> MainBroadcastPreference.Extra.VideoOperation.PreDefinedValues.SHARE
+                                        VideoOpertation.DOWNLOAD -> MainBroadcastPreference.Extra.VideoOperation.PreDefinedValues.DOWNLOAD
+                                    })
+                                })
+                            }
+                        }
+                    }
+                }
+
+                override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
+                    preProcessRejected()
+                }
+
+                private fun preProcessRejected() {
+                    Toast.makeText(application, "Failed to load", Toast.LENGTH_LONG).show()
+                    mClonedImageModelMap.clear()
+                }
+
+            })
+            .setRationaleMessage("This application needs storage permission to download")
+            .setDeniedMessage("Permission denied.")
+            .setGotoSettingButton(true)
+            .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .check()
+    }
 
     private fun loadImageTo(videoOperation: VideoOpertation) {
         val totalImageCount = mClonedImageModelMap.size
@@ -200,7 +202,7 @@ class VideoOperationController ( private val application: Application ) {
                 .subscribe {
                     mIsOnOperation.set(false)
                     application.sendBroadcast(Intent().apply {
-                        action = MainBroadcastPreference.Action.IMAGE_OPERATION_FINISHED
+                        action = MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED
                         putExtra(
                             MainBroadcastPreference.Target.KEY,
                             MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY

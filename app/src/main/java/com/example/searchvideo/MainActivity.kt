@@ -16,6 +16,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentManager
+import com.example.searchvideo.ListFragment
+import com.example.searchvideo.DetailFragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.searchvideo.Base.BaseActivity_ko
@@ -28,6 +30,7 @@ import com.example.searchvideo.util.PreferenceUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.android.ext.android.inject
 import com.mancj.materialsearchbar.MaterialSearchBar
+import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.*
 
 
@@ -61,8 +64,9 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
                                     mMainFragmentState = MainFragmentState.VIDEO_LIST
                                     super@MainActivity.onBackPressed()
                                 }
+
                                 MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED -> {
-                                    when(intent.getSerializableExtra(MainBroadcastPreference.Extra.VideoItem.KEY)) {
+                                    when(intent.getSerializableExtra(MainBroadcastPreference.Extra.VideoOperation.KEY)) {
                                         MainBroadcastPreference.Extra.VideoOperation.PreDefinedValues.SHARE -> {
                                             this@MainActivity.startActivity(
                                                 Intent.createChooser(intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT), "어디에 공유 하시겠습니까?"))
@@ -73,6 +77,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
                                         }
                                     }
                                 }
+                                MainBroadcastPreference.Action.FINISH_APPLICATION -> finishApplication()
 
                             }
                         }
@@ -84,11 +89,17 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     }
 
+    internal var suggestList:MutableList<String> = ArrayList()
+
+    override val layoutResourceId: Int
+        get() = R.layout.activity_main
+    override val viewModel: MainViewModel by viewModel()
+
+    private val listAdapter:ListAdapter by inject()
 
     override fun setUp() {
         setBroadcastReceiver()
         setToolBar()
-        searchbar()
         setFragmentManager()
 
     }
@@ -104,7 +115,8 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
                 MainBroadcastPreference.Action.VIDEO_ITEM_CLICKED,
                 MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT,
                 MainBroadcastPreference.Action.VIDEO_ITEM_SELECTION_MODE_CHANGED,
-                MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED
+                MainBroadcastPreference.Action.VIDEO_OPERATION_FINISHED,
+                MainBroadcastPreference.Action.FINISH_APPLICATION
                 //MainBroadcastPreference.Action.CHECK_IMAGE_OPERATION_PROCEEDING_WHEN_WIFI_DISCONNECTED
             ).forEach {
                 eachAction ->
@@ -116,6 +128,15 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(mMainBroadcastReceiver)
+    }
+
+    private fun setToolBar() {
+        setSupportActionBar(viewDataBinding.mainToolbar)
+        supportActionBar?.let {
+            it.setDisplayShowHomeEnabled(true)
+            it.setIcon(R.drawable.ic_search_black_24dp)
+            it.title="  영상 검색"
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -200,6 +221,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
                     MainRecentSearchSuggestionsProvider.MODE).clearHistory()
             }
         }
+        if(mMainFragmentState == MainFragmentState.VIDEO_DETAIL) onBackPressed()
         return false
     }
 
@@ -269,7 +291,8 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
         val videoDetailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
         mFragmentManager
             .beginTransaction()
-            //.setCustomAnimations()
+            .setCustomAnimations(R.anim.anim_fragment_enter_from_right, R.anim.anim_fragment_exit_to_left,
+                R.anim.anim_fragment_enter_from_left, R.anim.anim_fragment_exit_to_right)
             .hide(mVideoListFragment)
             .add(viewDataBinding.mainFragmentContainer.id, videoDetailFragment)
             .show(videoDetailFragment)
@@ -282,90 +305,5 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
     }
 
 
-    internal var suggestList:MutableList<String> = ArrayList()
 
-    override val layoutResourceId: Int
-        get() = R.layout.activity_main
-    override val viewModel: MainViewModel by viewModel()
-
-    private val listAdapter:ListAdapter by inject()
-
-
-
-    override fun initStartView() {
-
-
-        recycler_view.run {
-            adapter = listAdapter
-            layoutManager = StaggeredGridLayoutManager(2,1).apply{
-                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
-                orientation = StaggeredGridLayoutManager.VERTICAL
-            }
-            setHasFixedSize(true)
-
-        }
-
-    }
-
-    override fun initDataBinding() {
-        viewModel.videoSearchPersonLiveData.observe(this, Observer {
-            it.documents.forEach { document ->
-                //val url2:String = document.thumbnail+".jpg"
-
-                listAdapter.addVideoItem(document.thumbnail,document.url)
-            }
-            listAdapter.notifyDataSetChanged()
-        })
-    }
-
-    override fun initAfterBinding() {
-//        main_activity_search_button.setOnClickListener{
-//            viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
-//        }
-    }
-
-    private fun setToolBar() {
-        setSupportActionBar(viewDataBinding.mainToolbar)
-        supportActionBar?.let {
-            it.setDisplayShowHomeEnabled(true)
-            it.setIcon(R.drawable.ic_search_black_24dp)
-            it.title="  영상 검색"
-        }
-    }
-
-    private fun searchbar(){
-        main_activity_search_text_view.setCardViewElevation(10)
-        main_activity_search_text_view.addTextChangeListener(object :TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val suggest = ArrayList<String>()
-                for(search_term in suggestList)
-                    if(search_term.toLowerCase().contentEquals(main_activity_search_text_view.text.toLowerCase()))
-                        suggest.add(search_term)
-                main_activity_search_text_view.lastSuggestions = suggest
-            }
-
-        })
-        main_activity_search_text_view.setOnSearchActionListener(object:MaterialSearchBar.OnSearchActionListener{
-            override fun onButtonClicked(buttonCode: Int) {
-
-            }
-
-            override fun onSearchStateChanged(enabled: Boolean) {
-
-            }
-
-            override fun onSearchConfirmed(text: CharSequence?) {
-                viewModel.getVideoSearch(main_activity_search_text_view.text.toString(),1,30)
-            }
-
-        })
-    }
 }

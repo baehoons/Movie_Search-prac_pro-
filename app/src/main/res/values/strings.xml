@@ -3,4 +3,20 @@
     <string name="page_count">Page %1$d</string>
 
     <string name="download_image_prefix" translatable="false">SearchVideo_%1$d</string>
+
+    <string name="video_detail_info_title">
+        제목  : %1$s
+    </string>
+    <string name="video_detail_info_datetime">
+        등록일    : %1$s
+    </string>
+    <string name="video_detail_info_play_time">
+        재생시간 : %1$d
+    </string>
+
+    <string name="video_detail_info_author">
+        업로더 : %1$s
+    </string>
+
+    <string name="close">닫기</string>
 </resources>

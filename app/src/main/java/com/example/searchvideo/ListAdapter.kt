@@ -48,6 +48,9 @@ class ListAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     fun addVideoItem(VideoUrl: String, documentUrl: String){
         videoItemList.add(VideoItem(VideoUrl, documentUrl))
     }
+    fun clear(){
+        notifyDataSetChanged()
+    }
 
 
 }

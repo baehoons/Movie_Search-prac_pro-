@@ -24,8 +24,9 @@ abstract class BaseFragment <T : ViewDataBinding, R : BaseViewModel> : Fragment(
     /**
      * viewModel 로 쓰일 변수.
      */
-    abstract val getViewModel: R
+    abstract fun getViewModel(): R
 
+    abstract fun getBindingVariable(): Int
 
     /**
      * 레이아웃을 띄운 직후 호출.
@@ -67,6 +68,7 @@ abstract class BaseFragment <T : ViewDataBinding, R : BaseViewModel> : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewDataBinding.setVariable(getBindingVariable(), getViewModel())
         viewDataBinding.lifecycleOwner = this
         viewDataBinding.executePendingBindings()
         setUp()

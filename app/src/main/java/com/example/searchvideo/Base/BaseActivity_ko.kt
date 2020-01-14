@@ -15,14 +15,14 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
      * setContentView로 호출할 Layout의 리소스 Id.
      * ex) R.layout.activity_sbs_main
      */
-    abstract val layoutResourceId: Int
+    abstract fun getLayoutId(): Int
 
     /**
      * viewModel 로 쓰일 변수.
      */
-    abstract val viewModel: R
+    abstract fun getViewModel(): R
 
-
+    abstract fun getBindingVariable(): Int
     /**
      * 레이아웃을 띄운 직후 호출.
      * 뷰나 액티비티의 속성 등을 초기화.
@@ -51,8 +51,9 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewDataBinding = DataBindingUtil.setContentView(this, layoutResourceId)
+        viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId())
         viewDataBinding.lifecycleOwner = this
+        viewDataBinding.setVariable(getBindingVariable(),getViewModel())
         viewDataBinding.executePendingBindings()
         setUp()
         //snackbarObserving()
@@ -60,10 +61,10 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
     }
 
     private fun snackbarObserving() {
-        viewModel.observeSnackbarMessage(this) {
+        getViewModel().observeSnackbarMessage(this) {
             Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
         }
-        viewModel.observeSnackbarMessageStr(this){
+        getViewModel().observeSnackbarMessageStr(this){
             Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
         }
     }

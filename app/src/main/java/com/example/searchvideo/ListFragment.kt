@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -155,7 +156,8 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     internal var suggestList:MutableList<String> = ArrayList()
 
     override fun layoutResourceId(): Int = R.layout.fragment_list
-    override val getViewModel: ListViewModel =mVideoListViewModel
+    override fun getViewModel(): ListViewModel =mVideoListViewModel
+    override fun getBindingVariable(): Int = BR.viewModel
     private val listAdapter:ListAdapter by inject()
 
     override fun setUp() {
@@ -184,7 +186,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     }
 
     fun initDataBinding() {
-        getViewModel.videoSearchPersonLiveData.observe(this, Observer {
+        getViewModel().videoSearchPersonLiveData.observe(this, Observer {
             it.documents.forEach { document ->
                 //val url2:String = document.thumbnail+".jpg"
 
@@ -336,7 +338,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
             }
 
             override fun onSearchConfirmed(text: CharSequence?) {
-                getViewModel.getVideoSearch(videoListSearchResultTitle.text.toString(),1,30)
+                getViewModel().getVideoSearch(videoListSearchResultTitle.text.toString(),1,30)
             }
 
         })

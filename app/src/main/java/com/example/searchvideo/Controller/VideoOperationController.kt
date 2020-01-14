@@ -30,7 +30,10 @@ import java.io.FileOutputStream
 import java.util.ArrayList
 
 @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
-class VideoOperationController ( private val application: Application ) {
+class VideoOperationController (
+    private val application: Application
+) {
+
     private val mDownloadDirectory: File by lazy {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).also {
             if (!it.exists()) it.mkdir()

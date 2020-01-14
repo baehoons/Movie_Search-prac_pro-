@@ -1,7 +1,9 @@
 package com.example.searchvideo.Model
 
+import com.example.searchvideo.util.ConstantUtils
 import java.io.Serializable
 
+@Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
 data class VideoSearchResponse(
     var meta:Meta,
     var documents:ArrayList<Document>

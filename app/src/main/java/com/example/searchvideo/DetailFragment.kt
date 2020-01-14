@@ -7,24 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Typeface
-import android.net.Uri
-import android.os.Bundle
 import android.os.Handler
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.databinding.library.baseAdapters.BR
 import com.example.searchvideo.Base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.ViewModel.DetailViewModel
-import com.example.searchvideo.ViewModel.ListViewModel
 import com.example.searchvideo.databinding.FragmentDetailBinding
-import org.koin.android.ext.android.inject
 
 @Suppress("SetJavaScriptEnabled")
-class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document,mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
+class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
 
     private val mVideoDetailViewModel : DetailViewModel = DetailViewModel(application, videoModel, mVideoOperationController)
     private val mVideoDetailBroadcastReceiver = object : BroadcastReceiver(){
@@ -40,8 +33,8 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
                                 // 뒤로가기 버튼이 눌렸을 경우
                                 MainBroadcastPreference.Action.BACK_BUTTON_PRESSED -> {
                                     viewDataBinding.videoDetailWebView.let {
-                                            imageDetailWebView ->
-                                        if(imageDetailWebView.canGoBack() && imageDetailWebView.url != mVideoDetailViewModel.mKakaoVideoModel.url) imageDetailWebView.goBack()
+                                            videoDetailWebView ->
+                                        if(videoDetailWebView.canGoBack() && videoDetailWebView.url != mVideoDetailViewModel.mKakaoVideoModel.url) videoDetailWebView.goBack()
                                         else application.sendBroadcast(Intent().apply {
                                             action = MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT
                                             putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
@@ -58,7 +51,8 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
     }
 
     override fun layoutResourceId(): Int = R.layout.fragment_detail
-    override val getViewModel: DetailViewModel = mVideoDetailViewModel
+    override fun getBindingVariable(): Int = BR.viewModel
+    override fun getViewModel(): DetailViewModel = mVideoDetailViewModel
 
 
     override fun setUp() {

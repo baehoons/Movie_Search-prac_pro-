@@ -15,6 +15,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.FragmentManager
 import com.example.searchvideo.ListFragment
 import com.example.searchvideo.DetailFragment
@@ -91,9 +92,9 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     internal var suggestList:MutableList<String> = ArrayList()
 
-    override val layoutResourceId: Int
-        get() = R.layout.activity_main
-    override val viewModel: MainViewModel by viewModel()
+    override fun getLayoutId(): Int = R.layout.activity_main
+    override fun getViewModel():MainViewModel = mMainViewModel
+    override fun getBindingVariable(): Int = BR.viewModel
 
     private val listAdapter:ListAdapter by inject()
 
@@ -286,16 +287,16 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
             .commit()
     }
 
-    private fun showDetailFragment(videoModel:VideoSearchResponse.Document){
+    private fun showDetailFragment(videoModel : VideoSearchResponse.Document){
         mMainFragmentState = MainFragmentState.VIDEO_DETAIL
-        val videoDetailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
+        val detailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
         mFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.anim_fragment_enter_from_right, R.anim.anim_fragment_exit_to_left,
                 R.anim.anim_fragment_enter_from_left, R.anim.anim_fragment_exit_to_right)
             .hide(mVideoListFragment)
-            .add(viewDataBinding.mainFragmentContainer.id, videoDetailFragment)
-            .show(videoDetailFragment)
+            .add(viewDataBinding.mainFragmentContainer.id, detailFragment)
+            .show(detailFragment)
             .addToBackStack(null)
             .commit()
         mBackButtonEnabledFromDetail = false

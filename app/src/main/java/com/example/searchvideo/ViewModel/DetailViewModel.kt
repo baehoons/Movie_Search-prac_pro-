@@ -13,9 +13,12 @@ import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.util.ConstantUtils
 
 @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
-class DetailViewModel (application: Application, videoModel: VideoSearchResponse.Document,
-                       private val mVideoOperationController: VideoOperationController
+class DetailViewModel (
+    application: Application,
+    videoModel: VideoSearchResponse.Document,
+    private val mVideoOperationController: VideoOperationController
 ):BaseViewModel(application){
+
 
     var mKakaoVideoModel : VideoSearchResponse.Document = videoModel
     val mIsWebViewLoading = ObservableField(true)

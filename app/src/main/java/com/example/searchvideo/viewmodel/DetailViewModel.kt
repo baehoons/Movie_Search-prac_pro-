@@ -1,7 +1,6 @@
-package com.example.searchvideo.ViewModel
+package com.example.searchvideo.viewmodel
 
 import android.app.Application
-import android.content.Context
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView

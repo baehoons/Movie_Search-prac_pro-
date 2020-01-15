@@ -6,7 +6,7 @@
         <import type="android.view.View"/>
         <variable
             name="viewModel"
-            type="com.example.searchvideo.ViewModel.ListViewModel" />
+            type="com.example.searchvideo.viewmodel.ListViewModel" />
     </data>
 
 

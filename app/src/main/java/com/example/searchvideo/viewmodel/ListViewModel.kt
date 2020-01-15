@@ -1,7 +1,6 @@
-package com.example.searchvideo.ViewModel
+package com.example.searchvideo.viewmodel
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
@@ -15,7 +14,6 @@ import com.example.searchvideo.util.PreferenceUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.koin.dsl.module.applicationContext
 
 class ListViewModel(application: Application,private val model: DataModel, mPreferenceUtils: PreferenceUtils) : BaseViewModel(application){
     private val mApplication : Application = application

@@ -12,16 +12,14 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
-import androidx.databinding.library.baseAdapters.BR
 
 import com.example.searchvideo.Base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.R
-import com.example.searchvideo.ViewModel.DetailViewModel
+import com.example.searchvideo.viewmodel.DetailViewModel
 import com.example.searchvideo.databinding.FragmentDetailBinding
-import kotlinx.android.synthetic.main.fragment_detail.*
 
 @Suppress("SetJavaScriptEnabled")
 class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
@@ -63,7 +61,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
 
     override fun layoutResourceId(): Int = R.layout.fragment_detail
-    override fun getBindingVariable(): Int = BR.viewModel
+    //override fun getBindingVariable(): Int = BR.viewModel
     override fun getViewModel(): DetailViewModel = mVideoDetailViewModel
 
 

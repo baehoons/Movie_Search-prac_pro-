@@ -5,9 +5,9 @@ import com.example.searchvideo.ListAdapter
 import com.example.searchvideo.Model.DataModel
 import com.example.searchvideo.Model.DataModelImpl
 import com.example.searchvideo.Model.KakaoSearchService
-import com.example.searchvideo.ViewModel.DetailViewModel
-import com.example.searchvideo.ViewModel.ListViewModel
-import com.example.searchvideo.ViewModel.MainViewModel
+import com.example.searchvideo.viewmodel.DetailViewModel
+import com.example.searchvideo.viewmodel.ListViewModel
+import com.example.searchvideo.viewmodel.MainViewModel
 import com.example.searchvideo.util.PreferenceUtils
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module

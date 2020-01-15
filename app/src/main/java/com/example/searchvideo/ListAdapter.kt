@@ -15,8 +15,7 @@ import com.example.searchvideo.util.PreferenceUtils
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_main.view.*
 
-class ListAdapter(private val application: Application,
-                  private val mPreferenceUtils: PreferenceUtils, private val mVideoOperationController: VideoOperationController): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ListAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     data class VideoItem(var VideoUrl:String , var documentUrl:String)
 

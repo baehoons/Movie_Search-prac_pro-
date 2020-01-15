@@ -22,7 +22,7 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
      */
     abstract fun getViewModel(): R
 
-    abstract fun getBindingVariable(): Int
+    //abstract fun getBindingVariable(): Int
     /**
      * 레이아웃을 띄운 직후 호출.
      * 뷰나 액티비티의 속성 등을 초기화.
@@ -53,7 +53,7 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
 
         viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId())
         viewDataBinding.lifecycleOwner = this
-        viewDataBinding.setVariable(getBindingVariable(),getViewModel())
+        //viewDataBinding.setVariable(getBindingVariable(),getViewModel())
         viewDataBinding.executePendingBindings()
         setUp()
         //snackbarObserving()

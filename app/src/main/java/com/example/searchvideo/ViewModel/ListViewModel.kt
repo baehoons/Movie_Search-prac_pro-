@@ -7,6 +7,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.searchvideo.Base.BaseViewModel
+import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Model.DataModel
 import com.example.searchvideo.Model.KakaoSearchSortEnum
 import com.example.searchvideo.Model.VideoSearchResponse
@@ -17,7 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.koin.dsl.module.applicationContext
 
-class ListViewModel(application: Application,private val model: DataModel, mPreferenceUtils: PreferenceUtils) : BaseViewModel(application){
+class ListViewModel(application: Application,private val model: DataModel,private val mVideoOperationController: VideoOperationController, mPreferenceUtils: PreferenceUtils) : BaseViewModel(application){
     private val mApplication : Application = application
     private val mImageListItemViewModelList : ArrayList<ListViewModel> = ArrayList()
     private val mCompositeDisposable = CompositeDisposable()

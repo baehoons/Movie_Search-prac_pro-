@@ -1,120 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View"/>
         <variable
-            name="viewModel"
-            type="com.example.searchvideo.ViewModel.DetailViewModel" />
+        name="viewModel"
+        type="com.example.searchvideo.ViewModel.DetailViewModel" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+
+        android:id="@+id/videoDetailParentCoordinator"
+        tools:context=".DetailFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/videoDetailParentCoordinator"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/videoDetailAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/videoDetailAppBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true">
-
-                <com.google.android.material.appbar.CollapsingToolbarLayout
-                    android:id="@+id/videoDetailCollapsingAppToolBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
-                    app:contentScrim="?attr/colorPrimary"
-                    app:expandedTitleMarginEnd="64dp"
-                    app:expandedTitleMarginStart="48dp"
-                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                    <ImageView
-                        android:id="@+id/imageDetailSourceImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Cannot load Video"
-                        android:scaleType="fitCenter"
-                        app:layout_collapseMode="parallax"
-                        app:mainImage="@{viewModel.mKakaoVideoModel.thumbnail}" />
-
-                    <androidx.appcompat.widget.Toolbar
-                        android:id="@+id/videoDetailToolBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        app:layout_collapseMode="pin"
-                        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></androidx.appcompat.widget.Toolbar>
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/videoDetailShareButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="145dp"
-                android:onClick="@{() -> viewModel.boundOnShareButtonClick()}"
-                app:layout_anchor="@id/videoDetailAppBar"
-                app:layout_anchorGravity="bottom|end"
-                app:srcCompat="@drawable/ic_share" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/videoDetailInfoButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="80dp"
-                android:onClick="@{() -> viewModel.boundOnInfoButtonClick()}"
-                app:layout_anchor="@id/videoDetailAppBar"
-                app:layout_anchorGravity="bottom|end"
-                app:srcCompat="@android:drawable/ic_dialog_info" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/videoDetailDownloadButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
-                android:onClick="@{() -> viewModel.boundOnDownloadButtonClick()}"
-                app:layout_anchor="@id/videoDetailAppBar"
-                app:layout_anchorGravity="bottom|end"
-                app:srcCompat="@drawable/ic_download" />
-
-            <com.wang.avi.AVLoadingIndicatorView
-                android:id="@+id/videoDetailWebViewProgressIndicator"
-                style="@style/AVLoadingIndicatorView.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:visibility="@{safeUnbox(viewModel.mIsWebViewLoading) ? View.VISIBLE : View.GONE}"
-                app:indicatorColor="@color/colorBrightDark"
-                app:indicatorName="BallSpinFadeLoaderIndicator"
-                app:layout_anchor="@id/videoDetailInfoContainer"
-                app:layout_anchorGravity="center" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/videoDetailInfoContainer"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/videoDetailCollapsingAppToolBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:expandedTitleMarginEnd="64dp"
+                app:expandedTitleMarginStart="48dp"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <WebView
-                    android:id="@+id/videoDetailWebView"
+                <ImageView
+                    android:id="@+id/imageDetailSourceImage"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    app:loadImageDetailDocumentUrl="@{viewModel.mKakaoVideoModel.url}"
-                    app:setImageDetailDocumentClient="@{viewModel.mVideoDetailDocumentClient}"></WebView>
-            </androidx.core.widget.NestedScrollView>
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Cannot load Video"
+                    android:scaleType="fitCenter"
+                    app:layout_collapseMode="parallax"
+                    android:src="@{viewModel.mKakaoVideoModel.thumbnail}"
+                    />
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/videoDetailToolBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/videoDetailShareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="145dp"
+            android:onClick="@{() -> viewModel.boundOnShareButtonClick()}"
+            app:layout_anchor="@id/videoDetailAppBar"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_share" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/videoDetailInfoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="80dp"
+            android:onClick="@{() -> viewModel.boundOnInfoButtonClick()}"
+            app:layout_anchor="@id/videoDetailAppBar"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@android:drawable/ic_dialog_info" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/videoDetailDownloadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:onClick="@{() -> viewModel.boundOnDownloadButtonClick()}"
+            app:layout_anchor="@id/videoDetailAppBar"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_download" />
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/videoDetailWebViewProgressIndicator"
+            style="@style/AVLoadingIndicatorView.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:visibility="@{safeUnbox(viewModel.mIsWebViewLoading) ? View.VISIBLE : View.GONE}"
+            app:indicatorColor="@color/colorBrightDark"
+            app:indicatorName="BallSpinFadeLoaderIndicator"
+            app:layout_anchor="@id/videoDetailInfoContainer"
+            app:layout_anchorGravity="center" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/videoDetailInfoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <WebView
+                android:id="@+id/videoDetailWebView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp">
+            </WebView>
+        </androidx.core.widget.NestedScrollView>
 
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

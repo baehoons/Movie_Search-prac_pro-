@@ -13,6 +13,7 @@ data class VideoSearchResponse(
         var pageable_count:Int,
         var is_end:Boolean
     )
+    @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
     data class Document(
         var title:String,
         var url:String,

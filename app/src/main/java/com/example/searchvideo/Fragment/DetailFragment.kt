@@ -8,6 +8,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Handler
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
 
@@ -18,10 +21,12 @@ import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.R
 import com.example.searchvideo.ViewModel.DetailViewModel
 import com.example.searchvideo.databinding.FragmentDetailBinding
+import kotlinx.android.synthetic.main.fragment_detail.*
 
 @Suppress("SetJavaScriptEnabled")
 class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
 
+    private lateinit var webView: WebView
     private val mVideoDetailViewModel : DetailViewModel = DetailViewModel(application, videoModel, mVideoOperationController)
     private val mVideoDetailBroadcastReceiver = object : BroadcastReceiver(){
         override fun onReceive(p0: Context?, intent: Intent?) {
@@ -56,6 +61,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         }
     }
 
+
     override fun layoutResourceId(): Int = R.layout.fragment_detail
     override fun getBindingVariable(): Int = BR.viewModel
     override fun getViewModel(): DetailViewModel = mVideoDetailViewModel
@@ -65,7 +71,24 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         setBroadcastReceiver()
         setCollapsingToolBar()
         setWebView()
+        webSetting()
         setViewModelListener()
+    }
+    var mKakaoVideoModel : VideoSearchResponse.Document = videoModel
+
+    private fun webSetting(){
+        val webSettings = webView.settings
+        webSettings.javaScriptEnabled = true
+        webView.webViewClient = object :WebViewClient(){
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                view?.loadUrl(mKakaoVideoModel.url)
+                return true
+            }
+        }
+        webView.loadUrl(mKakaoVideoModel.url)
     }
 
     private fun setBroadcastReceiver() {

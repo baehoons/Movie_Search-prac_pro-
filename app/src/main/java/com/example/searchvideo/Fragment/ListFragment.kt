@@ -195,7 +195,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     }
 
     fun initAfterBinding() {
-
+        getViewModel().getVideoSearch(videoListSearchResultTitle.text.toString(),1,30)
     }
 
 

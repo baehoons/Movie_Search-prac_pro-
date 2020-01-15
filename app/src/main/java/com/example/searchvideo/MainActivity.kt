@@ -9,20 +9,16 @@ import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Handler
 import android.provider.SearchRecentSuggestions
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.FragmentManager
-import com.example.searchvideo.ListFragment
-import com.example.searchvideo.DetailFragment
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.searchvideo.Fragment.ListFragment
 import com.example.searchvideo.Base.BaseActivity_ko
 import com.example.searchvideo.Controller.VideoOperationController
+import com.example.searchvideo.Fragment.DetailFragment
 import com.example.searchvideo.Model.KakaoSearchSortEnum
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.ViewModel.MainViewModel
@@ -30,8 +26,6 @@ import com.example.searchvideo.databinding.ActivityMainBinding
 import com.example.searchvideo.util.PreferenceUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.android.ext.android.inject
-import com.mancj.materialsearchbar.MaterialSearchBar
-import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.*
 
 
@@ -41,6 +35,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
     private val mVideoOperationController:VideoOperationController by inject()
     private lateinit var mFragmentManager: FragmentManager
     private lateinit var mVideoListFragment: ListFragment
+    private lateinit var mVideoDetailFragment: DetailFragment
     private var mBackButtonEnabledFromDetail = true
     private var mAppTerminateConfirmFlag = false
     private lateinit var mSearchView : SearchView
@@ -89,8 +84,6 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
         }
 
     }
-
-    internal var suggestList:MutableList<String> = ArrayList()
 
     override fun getLayoutId(): Int = R.layout.activity_main
     override fun getViewModel():MainViewModel = mMainViewModel
@@ -289,14 +282,14 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     private fun showDetailFragment(videoModel : VideoSearchResponse.Document){
         mMainFragmentState = MainFragmentState.VIDEO_DETAIL
-        val detailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
+        mVideoDetailFragment = DetailFragment.newInstance(application, videoModel, mVideoOperationController)
         mFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.anim_fragment_enter_from_right, R.anim.anim_fragment_exit_to_left,
                 R.anim.anim_fragment_enter_from_left, R.anim.anim_fragment_exit_to_right)
             .hide(mVideoListFragment)
-            .add(viewDataBinding.mainFragmentContainer.id, detailFragment)
-            .show(detailFragment)
+            .add(viewDataBinding.mainFragmentContainer.id, mVideoDetailFragment)
+            .show(mVideoDetailFragment)
             .addToBackStack(null)
             .commit()
         mBackButtonEnabledFromDetail = false

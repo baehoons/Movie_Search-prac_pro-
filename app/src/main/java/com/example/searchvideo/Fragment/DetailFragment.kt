@@ -1,4 +1,4 @@
-package com.example.searchvideo
+package com.example.searchvideo.Fragment
 
 import android.app.AlertDialog
 import android.app.Application
@@ -10,9 +10,12 @@ import android.graphics.Typeface
 import android.os.Handler
 import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
+
 import com.example.searchvideo.Base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
+import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.VideoSearchResponse
+import com.example.searchvideo.R
 import com.example.searchvideo.ViewModel.DetailViewModel
 import com.example.searchvideo.databinding.FragmentDetailBinding
 
@@ -36,8 +39,11 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
                                             videoDetailWebView ->
                                         if(videoDetailWebView.canGoBack() && videoDetailWebView.url != mVideoDetailViewModel.mKakaoVideoModel.url) videoDetailWebView.goBack()
                                         else application.sendBroadcast(Intent().apply {
-                                            action = MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT
-                                            putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
+                                            action =
+                                                MainBroadcastPreference.Action.CLOSE_VIDEO_DETAIL_FRAGMENT
+                                            putExtra(
+                                                MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY
+                                            )
                                         })
                                     }
                                 }
@@ -82,7 +88,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         viewDataBinding.videoDetailCollapsingAppToolBar.apply {
             title = "영상 자세히 보기"
             setCollapsedTitleTypeface(Typeface.DEFAULT_BOLD)
-            setExpandedTitleColor(ContextCompat.getColor(context, R.color.colorAccent))
+            setExpandedTitleColor(ContextCompat.getColor(context, R.color.colorTransparent))
         }
     }
 
@@ -131,6 +137,11 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
     companion object {
         /** 새로운 프래그먼트를 생성합니다. */
-        fun newInstance(application: Application, videoModel: VideoSearchResponse.Document, videoOperationController: VideoOperationController) = DetailFragment(application, videoModel, videoOperationController)
+        fun newInstance(application: Application, videoModel: VideoSearchResponse.Document, videoOperationController: VideoOperationController) =
+            DetailFragment(
+                application,
+                videoModel,
+                videoOperationController
+            )
     }
 }

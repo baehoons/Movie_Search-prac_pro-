@@ -1,4 +1,4 @@
-package com.example.searchvideo
+package com.example.searchvideo.Fragment
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -6,26 +6,22 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.net.Uri
-import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.searchvideo.Base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
+import com.example.searchvideo.ListAdapter
+import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.KakaoSearchSortEnum
+import com.example.searchvideo.R
 import com.example.searchvideo.ViewModel.ListViewModel
-import com.example.searchvideo.ViewModel.MainViewModel
 import com.example.searchvideo.databinding.FragmentListBinding
 import com.example.searchvideo.util.PreferenceUtils
 import com.linroid.filtermenu.library.FilterMenu
@@ -137,7 +133,8 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
                                 MainBroadcastPreference.Action.BACK_BUTTON_PRESSED -> {
                                     if (mVideoListViewModel.mPageNumber > 1) mVideoListViewModel.boundOnPrevPageButtonClick()
                                     else mActivity?.sendBroadcast(Intent().apply {
-                                        action = MainBroadcastPreference.Action.FINISH_APPLICATION
+                                        action =
+                                            MainBroadcastPreference.Action.FINISH_APPLICATION
                                         putExtra(
                                             MainBroadcastPreference.Target.KEY,
                                             MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY
@@ -156,9 +153,10 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     internal var suggestList:MutableList<String> = ArrayList()
 
     override fun layoutResourceId(): Int = R.layout.fragment_list
-    override fun getViewModel(): ListViewModel =mVideoListViewModel
     override fun getBindingVariable(): Int = BR.viewModel
-    private val listAdapter:ListAdapter by inject()
+    override fun getViewModel(): ListViewModel =mVideoListViewModel
+
+    private val listAdapter: ListAdapter by inject()
 
     override fun setUp() {
         setBroadcastReceiver()
@@ -170,7 +168,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
         setFilterMenu()
     }
     private fun setRecyclerViewLayoutManager(){
-        recycler_view.run {
+        viewDataBinding.recyclerView.apply{
             adapter = listAdapter
             layoutManager = StaggeredGridLayoutManager(2,1).apply{
                 gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
@@ -249,7 +247,9 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
             setWaveRGBColor(255, 237, 163)
             isEnabled = false
             setOnRefreshListener {
-                viewDataBinding.recyclerView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_alpha_disappear).apply {
+                viewDataBinding.recyclerView.startAnimation(AnimationUtils.loadAnimation(context,
+                    R.anim.anim_alpha_disappear
+                ).apply {
                     setAnimationListener(object : Animation.AnimationListener {
                         override fun onAnimationRepeat(p0: Animation?) = Unit
                         override fun onAnimationEnd(p0: Animation?) {
@@ -287,7 +287,9 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
 
     private fun showFilterMenuWithAnimation() {
         mVideoListViewModel.showFilterMenu()
-        val filterAppearAnim = AnimationUtils.loadAnimation(context, R.anim.anim_filter_menu_appear)
+        val filterAppearAnim = AnimationUtils.loadAnimation(context,
+            R.anim.anim_filter_menu_appear
+        )
         viewDataBinding.videoListFilterMenu.startAnimation(filterAppearAnim)
         viewDataBinding.videoListRefreshLayout.isEnabled = false
     }
@@ -295,7 +297,9 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     /** Filter Menu 를 Translation 애니메이션과 함께 화면에서 제거합니다. */
     private fun hideFilterMenuWithAnimation() {
         if(mVideoListViewModel.mFilterMenuVisibility.get()!!) {
-            val filterDisappearAnim = AnimationUtils.loadAnimation(context, R.anim.anim_filter_menu_disappear)
+            val filterDisappearAnim = AnimationUtils.loadAnimation(context,
+                R.anim.anim_filter_menu_disappear
+            )
             filterDisappearAnim.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationEnd(p0: Animation?) {
                     mVideoListViewModel.hideFilterMenu()

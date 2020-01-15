@@ -56,4 +56,4 @@ val util = module {
     single { PreferenceUtils(get()) }
 }
 
-var myDiModule = listOf(retrofitPart, adapterPart, modelPart, viewModelPart,controller, util)
+var myDiModule = listOf(viewModelPart,adapterPart,retrofitPart, modelPart,controller, util)

@@ -1,11 +1,10 @@
-package com.example.searchvideo.Base
+package com.example.searchvideo.base
 
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -26,7 +25,7 @@ abstract class BaseFragment <T : ViewDataBinding, R : BaseViewModel> : Fragment(
      */
     abstract fun getViewModel(): R
 
-    //abstract fun getBindingVariable(): Int
+    abstract fun getBindingVariable(): Int
 
     /**
      * 레이아웃을 띄운 직후 호출.
@@ -68,7 +67,7 @@ abstract class BaseFragment <T : ViewDataBinding, R : BaseViewModel> : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //viewDataBinding.setVariable(getBindingVariable(), getViewModel())
+        viewDataBinding.setVariable(getBindingVariable(), getViewModel())
         viewDataBinding.lifecycleOwner = this
         viewDataBinding.executePendingBindings()
         setUp()

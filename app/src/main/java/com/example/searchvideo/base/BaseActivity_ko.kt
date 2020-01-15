@@ -1,11 +1,10 @@
-package com.example.searchvideo.Base
+package com.example.searchvideo.base
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCompatActivity() {
 
@@ -22,7 +21,7 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
      */
     abstract fun getViewModel(): R
 
-    //abstract fun getBindingVariable(): Int
+    abstract fun getBindingVariable(): Int
     /**
      * 레이아웃을 띄운 직후 호출.
      * 뷰나 액티비티의 속성 등을 초기화.
@@ -53,7 +52,7 @@ abstract class BaseActivity_ko <T : ViewDataBinding, R : BaseViewModel> : AppCom
 
         viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId())
         viewDataBinding.lifecycleOwner = this
-        //viewDataBinding.setVariable(getBindingVariable(),getViewModel())
+        viewDataBinding.setVariable(getBindingVariable(),getViewModel())
         viewDataBinding.executePendingBindings()
         setUp()
         //snackbarObserving()

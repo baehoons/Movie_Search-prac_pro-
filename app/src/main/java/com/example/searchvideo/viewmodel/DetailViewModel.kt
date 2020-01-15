@@ -6,7 +6,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.databinding.ObservableField
-import com.example.searchvideo.Base.BaseViewModel
+import com.example.searchvideo.base.BaseViewModel
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.util.ConstantUtils

@@ -12,9 +12,10 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.searchvideo.Base.BaseFragment
+import com.example.searchvideo.base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.ListAdapter
 import com.example.searchvideo.MainBroadcastPreference
@@ -152,7 +153,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     internal var suggestList:MutableList<String> = ArrayList()
 
     override fun layoutResourceId(): Int = R.layout.fragment_list
-    //override fun getBindingVariable(): Int = BR.viewModel
+    override fun getBindingVariable(): Int = BR.viewModel
     override fun getViewModel(): ListViewModel =mVideoListViewModel
 
     private val listAdapter: ListAdapter by inject()
@@ -194,7 +195,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
     }
 
     fun initAfterBinding() {
-        getViewModel().getVideoSearch(videoListSearchResultTitle.text.toString(),1,30)
+
     }
 
 

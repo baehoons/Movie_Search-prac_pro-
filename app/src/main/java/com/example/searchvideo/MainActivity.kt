@@ -13,9 +13,10 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.FragmentManager
 import com.example.searchvideo.Fragment.ListFragment
-import com.example.searchvideo.Base.BaseActivity_ko
+import com.example.searchvideo.base.BaseActivity_ko
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Fragment.DetailFragment
 import com.example.searchvideo.Model.KakaoSearchSortEnum
@@ -85,7 +86,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
     override fun getLayoutId(): Int = R.layout.activity_main
     override fun getViewModel():MainViewModel = mMainViewModel
-    //override fun getBindingVariable(): Int = BR.viewModel
+    override fun getBindingVariable(): Int = BR.viewModel
 
     private val listAdapter:ListAdapter by inject()
 

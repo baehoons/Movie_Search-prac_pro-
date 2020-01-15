@@ -12,8 +12,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
+import androidx.databinding.library.baseAdapters.BR
 
-import com.example.searchvideo.Base.BaseFragment
+import com.example.searchvideo.base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.VideoSearchResponse
@@ -61,7 +62,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
 
     override fun layoutResourceId(): Int = R.layout.fragment_detail
-    //override fun getBindingVariable(): Int = BR.viewModel
+    override fun getBindingVariable(): Int = BR.viewModel
     override fun getViewModel(): DetailViewModel = mVideoDetailViewModel
 
 

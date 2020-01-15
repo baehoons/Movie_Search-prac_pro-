@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.searchvideo.Base.BaseViewModel
+import com.example.searchvideo.base.BaseViewModel
 import com.example.searchvideo.Model.DataModel
 import com.example.searchvideo.Model.KakaoSearchSortEnum
 import com.example.searchvideo.Model.VideoSearchResponse
@@ -119,7 +119,6 @@ class ListViewModel(application: Application,private val model: DataModel, mPref
                         Log.d(TAG, "documents : $documents")
                         _videoSearchPersonLiveData.postValue(this)
                     }
-
                     Log.d(TAG, "meta : $meta")
                 }
             }, {

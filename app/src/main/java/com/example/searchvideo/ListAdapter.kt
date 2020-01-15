@@ -1,5 +1,6 @@
 package com.example.searchvideo
 
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
@@ -7,12 +8,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.util.PicassoTransformations
+import com.example.searchvideo.util.PreferenceUtils
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_main.view.*
 
-class ListAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ListAdapter(private val application: Application,
+                  private val mPreferenceUtils: PreferenceUtils, private val mVideoOperationController: VideoOperationController): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     data class VideoItem(var VideoUrl:String , var documentUrl:String)
 

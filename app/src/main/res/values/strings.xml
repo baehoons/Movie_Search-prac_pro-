@@ -11,12 +11,15 @@
         등록일    : %1$s
     </string>
     <string name="video_detail_info_play_time">
-        재생시간 : %1$d
+        재생시간 :
     </string>
-
+    <string name="no_search_result_caption">검색 결과가 없습니다</string>
     <string name="video_detail_info_author">
         업로더 : %1$s
     </string>
 
+    <string name="search_list_title_hint">키워드를 입력</string>
+    <string name="search_list_title">검색된 결과: \'%1$s\'</string>
+    <string name="no_search_result_title">\'%1$s\'의 검색결과가 없습니다</string>
     <string name="close">닫기</string>
 </resources>

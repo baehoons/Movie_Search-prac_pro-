@@ -22,6 +22,9 @@ class PreferenceUtils(
     fun getDisplayCount() : Int =
         userPreference.getInt(PreferenceCategory.User.DISPLAY_COUNT.attributeName, 30)
 
+    fun getVideoColumnCount() : Int =
+        userPreference.getInt(PreferenceCategory.User.VIDEO_COLUMN_COUNT.attributeName, 3)
+
     /**
      * 페이지당 사진 표시 갯수를 저장합니다.
      *
@@ -47,10 +50,12 @@ class PreferenceUtils(
 private object PreferenceCategory {
     /** 유저와 관련된 환경설정 정보 범주입니다. */
     enum class User(val attributeName : String) {
-        DISPLAY_COUNT("utils.PreferenceCategory.User.DISPLAY_COUNT"),
+        DISPLAY_COUNT("util.PreferenceCategory.User.DISPLAY_COUNT"),
         /** 이미지 정렬 기준 */
-        KAKAO_IMAGE_SORT_OPTION("utils.PreferenceCategory.User.KAKAO_IMAGE_SORT_OPTION"),
+        KAKAO_IMAGE_SORT_OPTION("util.PreferenceCategory.User.KAKAO_IMAGE_SORT_OPTION"),
         /** 이미지 확대 수치 */
-        IMAGE_SIZE_PERCENTAGE("utils.PreferenceCategory.User.IMAGE_SIZE_PERCENTAGE"),
+        IMAGE_SIZE_PERCENTAGE("util.PreferenceCategory.User.IMAGE_SIZE_PERCENTAGE"),
+
+        VIDEO_COLUMN_COUNT("util.PreferenceCategory.User.VIDEO_COLUMN_COUNT")
     }
 }

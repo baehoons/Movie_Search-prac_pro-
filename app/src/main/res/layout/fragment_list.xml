@@ -31,19 +31,19 @@
                     android:layout_margin="7sp"
                     android:id="@+id/videoListToolBarContainerConstraint">
 
-                    <com.mancj.materialsearchbar.MaterialSearchBar
+                    <TextView
                         android:id="@+id/videoListSearchResultTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="@{viewModel.mSearchResultTitle}"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginRight="16dp"
-                        android:background="@color/colorPrimaryDark"
-                        android:ems="10"
-                        android:hint="제목을 입력하세요"
-                        android:inputType="textPersonName"
+
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

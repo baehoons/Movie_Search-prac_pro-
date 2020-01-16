@@ -21,7 +21,14 @@ data class VideoSearchResponse(
         var play_time:Int,
         var thumbnail:String,
         var author:String
-
     ) :Serializable
+
+    @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
+    data class KakaoVideoModelList(
+        val isEnd : Boolean,
+        val pageableCount : Int,
+        val totalCount : Int,
+        val documents : java.util.ArrayList<Document>
+    )
 
 }

@@ -70,25 +70,24 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         setBroadcastReceiver()
         setCollapsingToolBar()
         setWebView()
-        webSetting()
         setViewModelListener()
     }
     var mKakaoVideoModel : VideoSearchResponse.Document = videoModel
 
-    private fun webSetting(){
-        val webSettings = webView.settings
-        webSettings.javaScriptEnabled = true
-        webView.webViewClient = object :WebViewClient(){
-            override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): Boolean {
-                view?.loadUrl(mKakaoVideoModel.url)
-                return true
-            }
-        }
-        webView.loadUrl(mKakaoVideoModel.url)
-    }
+//    private fun webSetting(){
+//        val webSettings = webView.settings
+//        webSettings.javaScriptEnabled = true
+//        webView.webViewClient = object :WebViewClient(){
+//            override fun shouldOverrideUrlLoading(
+//                view: WebView?,
+//                request: WebResourceRequest?
+//            ): Boolean {
+//                view?.loadUrl(mKakaoVideoModel.url)
+//                return true
+//            }
+//        }
+//        webView.loadUrl(mKakaoVideoModel.url)
+//    }
 
     private fun setBroadcastReceiver() {
         activity?.registerReceiver(mVideoDetailBroadcastReceiver, IntentFilter().also {
@@ -108,7 +107,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
     private fun setCollapsingToolBar(){
         viewDataBinding.videoDetailCollapsingAppToolBar.apply {
-            title = "영상 자세히 보기"
+            title = "리스트 자세히 보기"
             setCollapsedTitleTypeface(Typeface.DEFAULT_BOLD)
             setExpandedTitleColor(ContextCompat.getColor(context, R.color.colorTransparent))
         }
@@ -140,6 +139,9 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
      * Dialog 에 ImageModel 의 정보를 담아서 화면에 보이도록 합니다.
      */
     private fun setViewModelListener() {
+        var play_time_h:Int = mKakaoVideoModel.play_time/(60*60)
+        var play_time_m:Int = (mKakaoVideoModel.play_time-(play_time_h*60*60))/60
+        var play_time_s:Int = mKakaoVideoModel.play_time-(play_time_h*60*60)-(play_time_m*60)
         mVideoDetailViewModel.apply {
             onInfoButtonClickListener = {
                 AlertDialog.Builder(context).apply {
@@ -147,7 +149,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
                     setMessage(
                         "${getString(R.string.video_detail_info_title, mKakaoVideoModel.title)}\n" +
                                 "${getString(R.string.video_detail_info_author, mKakaoVideoModel.author)}\n" +
-                                "${getString(R.string.video_detail_info_play_time, mKakaoVideoModel.play_time)}\n" +
+                                "${getString(R.string.video_detail_info_play_time)} ${play_time_h}시간 ${play_time_m}분 ${play_time_s}초\n" +
                                 getString(R.string.video_detail_info_datetime, mKakaoVideoModel.datetime)
                     )
                     setPositiveButton(R.string.close, null)

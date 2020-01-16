@@ -40,7 +40,7 @@
                     android:contentDescription="Cannot load Video"
                     android:scaleType="fitCenter"
                     app:layout_collapseMode="parallax"
-                    android:src="@{viewModel.mKakaoVideoModel.thumbnail}"
+                    app:mainImage="@{viewModel.mKakaoVideoModel.thumbnail}"
                     />
 
                 <androidx.appcompat.widget.Toolbar
@@ -101,6 +101,8 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <WebView
+                app:loadImageDetailDocumentUrl="@{viewModel.mKakaoVideoModel.url}"
+                app:setVideoDetailDocumentClient="@{viewModel.mVideoDetailDocumentClient}"
                 android:id="@+id/videoDetailWebView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

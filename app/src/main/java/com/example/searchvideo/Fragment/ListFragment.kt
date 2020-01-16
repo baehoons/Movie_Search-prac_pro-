@@ -14,6 +14,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.searchvideo.base.BaseFragment
 import com.example.searchvideo.Controller.VideoOperationController
@@ -24,6 +25,7 @@ import com.example.searchvideo.R
 import com.example.searchvideo.viewmodel.ListViewModel
 import com.example.searchvideo.databinding.FragmentListBinding
 import com.example.searchvideo.util.PreferenceUtils
+import com.example.searchvideo.viewmodel.ListItemViewModel
 import com.linroid.filtermenu.library.FilterMenu
 import com.mancj.materialsearchbar.MaterialSearchBar
 import kotlinx.android.synthetic.main.fragment_list.*
@@ -61,13 +63,13 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
                             when (actionString) {
 
                                 // 새로운 검색어 입력됨
-//                                MainBroadcastPreference.Action.NEW_SEARCH_QUERY_INPUT -> {
-//                                    val queryKeyword =
-//                                        intent.getStringExtra(MainBroadcastPreference.Extra.QueryString.KEY)
-//                                    queryKeyword?.let {
-//                                        mVideoListViewModel.inputNewKeyword(queryKeyword)
-//                                    }
-//                                }
+                                MainBroadcastPreference.Action.NEW_SEARCH_QUERY_INPUT -> {
+                                    val queryKeyword =
+                                        intent.getStringExtra(MainBroadcastPreference.Extra.QueryString.KEY)
+                                    queryKeyword?.let {
+                                        mVideoListViewModel.inputNewKeyword(queryKeyword)
+                                    }
+                                }
 
                                 // 정렬 기준이 변경됨
                                 MainBroadcastPreference.Action.SORT_OPTION_CHANGED -> {
@@ -150,54 +152,19 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
         }
     }
 
-    internal var suggestList:MutableList<String> = ArrayList()
 
     override fun layoutResourceId(): Int = R.layout.fragment_list
     override fun getBindingVariable(): Int = BR.viewModel
     override fun getViewModel(): ListViewModel =mVideoListViewModel
 
-    private val listAdapter: ListAdapter by inject()
 
     override fun setUp() {
         setBroadcastReceiver()
-        initStartView()
-        initDataBinding()
-        initAfterBinding()
-        searchbar()
+        setVideoListRecyclerAdapter()
+        setViewModelListener()
         setRefreshLayout()
         setFilterMenu()
     }
-    private fun setRecyclerViewLayoutManager(){
-        viewDataBinding.recyclerView.apply{
-            adapter = listAdapter
-            layoutManager = StaggeredGridLayoutManager(2,1).apply{
-                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
-                orientation = StaggeredGridLayoutManager.VERTICAL
-            }
-            setHasFixedSize(true)
-
-        }
-    }
-
-    fun initStartView() {
-        setRecyclerViewLayoutManager()
-    }
-
-    fun initDataBinding() {
-        getViewModel().videoSearchPersonLiveData.observe(this, Observer {
-            it.documents.forEach { document ->
-                //val url2:String = document.thumbnail+".jpg"
-
-                listAdapter.addVideoItem(document.thumbnail,document.url)
-            }
-            listAdapter.notifyDataSetChanged()
-        })
-    }
-
-    fun initAfterBinding() {
-
-    }
-
 
 
 
@@ -221,26 +188,45 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
         activity?.unregisterReceiver(mVideoListBroadcastReceiver)
         mVideoListRecyclerAdapter.clear()
     }
+
+
+    private fun setVideoListRecyclerAdapter() {
+        viewDataBinding.recyclerView.apply {
+            adapter = mVideoListRecyclerAdapter
+        }
+        setRecyclerViewLayoutManager()
+    }
+
+    private fun setRecyclerViewLayoutManager() {
+        val portraitImageColumnCount = mPreferenceUtils.getVideoColumnCount()
+        viewDataBinding.recyclerView.apply {
+            val position = if(layoutManager != null) (layoutManager as GridLayoutManager).findFirstVisibleItemPosition() else 0
+            layoutManager = if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) GridLayoutManager(mActivity, portraitImageColumnCount)
+            else GridLayoutManager(mActivity, portraitImageColumnCount * mColumnCountRatio)
+            scrollToPosition(position)
+        }
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         setRecyclerViewLayoutManager()
     }
 
-//    private fun setViewModelListener() {
-//        mVideoListViewModel.apply {
-//            onQueryChangedListener = {
-//                    queryKeyword, sortOption, pageNumber, displayCount ->
-//                mVideoListViewModel.getVideoSearch(queryKeyword, sortOption, pageNumber, displayCount) {
-//                        isError, errorMessage, isEmpty, isEnd ->
-//                    mVideoListViewModel.setSearchResult(isError, errorMessage, pageNumber, isEmpty, isEnd)
-//                    with(mViewDataBinding.imageListRefreshLayout) {
-//                        isEnabled = true
-//                        if(isRefreshing) isRefreshing = false
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private fun setViewModelListener() {
+        mVideoListViewModel.apply {
+            onQueryChangedListener = {
+                    queryKeyword, sort, pageNumber, displayCount ->
+                mVideoListRecyclerAdapter.searchImage(queryKeyword, sort, pageNumber, displayCount) {
+                        isError, errorMessage, isEmpty, isEnd ->
+                    mVideoListViewModel.setSearchResult(isError, errorMessage, pageNumber, isEmpty, isEnd)
+                    with(viewDataBinding.videoListRefreshLayout) {
+                        isEnabled = true
+                        if(isRefreshing) isRefreshing = false
+                    }
+                }
+            }
+        }
+    }
 
     private fun setRefreshLayout() {
         viewDataBinding.videoListRefreshLayout.apply {
@@ -312,41 +298,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
         }
     }
 
-    private fun searchbar(){
-        videoListSearchResultTitle.setCardViewElevation(10)
-        videoListSearchResultTitle.addTextChangeListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
 
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val suggest = ArrayList<String>()
-                for(search_term in suggestList)
-                    if(search_term.toLowerCase().contentEquals(videoListSearchResultTitle.text.toLowerCase()))
-                        suggest.add(search_term)
-                videoListSearchResultTitle.lastSuggestions = suggest
-            }
-
-        })
-        videoListSearchResultTitle.setOnSearchActionListener(object: MaterialSearchBar.OnSearchActionListener{
-            override fun onButtonClicked(buttonCode: Int) {
-
-            }
-
-            override fun onSearchStateChanged(enabled: Boolean) {
-
-            }
-
-            override fun onSearchConfirmed(text: CharSequence?) {
-                getViewModel().getVideoSearch(videoListSearchResultTitle.text.toString(),1,30)
-            }
-
-        })
-    }
     companion object {
         /** 새로운 프래그먼트를 생성합니다. */
         fun newInstance() = ListFragment()

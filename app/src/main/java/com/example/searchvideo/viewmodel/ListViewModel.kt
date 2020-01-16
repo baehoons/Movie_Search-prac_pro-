@@ -15,7 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class ListViewModel(application: Application,private val model: DataModel, mPreferenceUtils: PreferenceUtils) : BaseViewModel(application){
+class ListViewModel(application: Application, mPreferenceUtils: PreferenceUtils) : BaseViewModel(application){
     private val mApplication : Application = application
     private val mImageListItemViewModelList : ArrayList<ListViewModel> = ArrayList()
     private val mCompositeDisposable = CompositeDisposable()
@@ -24,7 +24,11 @@ class ListViewModel(application: Application,private val model: DataModel, mPref
     private val _videoSearchPersonLiveData = MutableLiveData<VideoSearchResponse>()
     val videoSearchPersonLiveData: LiveData<VideoSearchResponse>
         get() = _videoSearchPersonLiveData
-
+    var mSearchResultTitle = MutableLiveData<CharSequence>().apply {
+        value = if(::mRecentQueryKeyword.isInitialized) mApplication.getString(R.string.search_list_title, mRecentQueryKeyword)
+            else application.getString(R.string.search_list_title_hint)
+    }
+    var mAbnormalResultMessage = MutableLiveData<CharSequence>().apply { value = application.getString(R.string.no_search_result_caption) }
     private val initialPageNumber = 1
     private val maxPageNumber = 50
 
@@ -38,6 +42,7 @@ class ListViewModel(application: Application,private val model: DataModel, mPref
     var mDisplayCount = mPreferenceUtils.getDisplayCount()
     var mFilterMenuVisibility = ObservableField(false)
     private lateinit var mRecentQueryKeyword : String
+
     lateinit var onQueryChangedListener : (queryKeyword : String, sortOption : KakaoSearchSortEnum, pageNumber : Int, displayCount : Int) -> Unit
 
     fun inputNewKeyword(queryKeyword : String) {
@@ -54,6 +59,8 @@ class ListViewModel(application: Application,private val model: DataModel, mPref
         mPageNumber = pageNumber
         mPageNumberText.value = mApplication.getString(R.string.page_count, mPageNumber)
         mNoSearchResult.set(isEmpty)
+        if(isEmpty) mSearchResultTitle.value = mApplication.getString(R.string.no_search_result_title, mRecentQueryKeyword)
+        else mSearchResultTitle.value = mApplication.getString(R.string.search_list_title, mRecentQueryKeyword)
 
         if(isEmpty) mPageButtonVisibility.set(false)
         else {
@@ -107,23 +114,23 @@ class ListViewModel(application: Application,private val model: DataModel, mPref
         onQueryChangedListener(mRecentQueryKeyword, mSortOption, mPageNumber + 1, mDisplayCount)
     }
 
-    fun getVideoSearch(query:String, page:Int, size:Int){
-        mImageListItemViewModelList.clear()
-        mCompositeDisposable.clear()
-        mCompositeDisposable.add(model.getData(query, KakaoSearchSortEnum.Accuracy, page, size)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                it.run {
-                    if (documents.size > 0) {
-                        Log.d(TAG, "documents : $documents")
-                        _videoSearchPersonLiveData.postValue(this)
-                    }
-                    Log.d(TAG, "meta : $meta")
-                }
-            }, {
-                Log.d(TAG, "response error, message : ${it.message}")
-            }))
-    }
+//    fun getVideoSearch(query:String, page:Int, size:Int){
+//        mImageListItemViewModelList.clear()
+//        mCompositeDisposable.clear()
+//        mCompositeDisposable.add(model.getData(query, KakaoSearchSortEnum.Accuracy, page, size)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                it.run {
+//                    if (documents.size > 0) {
+//                        Log.d(TAG, "documents : $documents")
+//                        _videoSearchPersonLiveData.postValue(this)
+//                    }
+//                    Log.d(TAG, "meta : $meta")
+//                }
+//            }, {
+//                Log.d(TAG, "response error, message : ${it.message}")
+//            }))
+//    }
 
 }

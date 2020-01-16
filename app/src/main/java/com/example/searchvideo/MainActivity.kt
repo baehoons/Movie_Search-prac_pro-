@@ -1,6 +1,7 @@
 package com.example.searchvideo
 
 import android.app.Activity
+import android.app.Application
 import android.app.SearchManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,16 +15,20 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.library.baseAdapters.BR
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import com.example.searchvideo.Fragment.ListFragment
 import com.example.searchvideo.base.BaseActivity_ko
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.Fragment.DetailFragment
 import com.example.searchvideo.Model.KakaoSearchSortEnum
+import com.example.searchvideo.Model.KakaoVideoModelManager
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.viewmodel.MainViewModel
 import com.example.searchvideo.databinding.ActivityMainBinding
 import com.example.searchvideo.util.PreferenceUtils
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.android.ext.android.inject
 
@@ -42,6 +47,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
     private val mAppTerminateConfirmHandler = Handler()
     private val mPreferenceUtils : PreferenceUtils by inject()
     private var mIsSearchViewShownAtFirstTime = false
+    private lateinit var mKakaoVideoModel:VideoSearchResponse.Document
 
     private val mMainBroadcastReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -296,6 +302,37 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
 
 
     }
+
+//    private fun cre(){
+//        val adapter = MyViewPagerAdapter(supportFragmentManager)
+//        adapter.addFragment(ListFragment(),"list")
+//        adapter.addFragment(DetailFragment(mVideoOperationController = VideoOperationController(application),application = Application(),videoModel = mKakaoVideoModel),"detail")
+//
+//    }
+//    class MyViewPagerAdapter(manager:FragmentManager) : FragmentPagerAdapter(manager)
+//    {
+//
+//        private val fragmentList:MutableList<Fragment> = ArrayList()
+//        private val titleList:MutableList<String> = ArrayList()
+//
+//        override fun getItem(position: Int): Fragment {
+//            return fragmentList[position]
+//        }
+//
+//        override fun getCount(): Int {
+//            return fragmentList.size
+//        }
+//
+//        fun addFragment(fragment: Fragment,title:String){
+//            fragmentList.add(fragment)
+//            titleList.add(title)
+//        }
+//
+//        override fun getPageTitle(position: Int): CharSequence? {
+//            return titleList[position]
+//        }
+//
+//    }
 
 
 

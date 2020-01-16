@@ -50,6 +50,15 @@
             app:interval="100" app:layout_constraintBottom_toBottomOf="@+id/mainFragmentContainer"
             android:layout_marginBottom="50dp">
         </ir.alirezabdn.wp7progress.WP7ProgressBar>
+
+<!--        <androidx.viewpager2.widget.ViewPager2-->
+<!--            android:id="@+id/viewpager"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -81,7 +81,8 @@ dependencies {
     implementation "com.linroid.filtermenu:library:0.2.3"
 
     // TedPermission
-    implementation "gun0912.ted:tedpermission:2.2.0"
+    implementation "gun0912.ted:tedpermission:2.2.3"
+    implementation "gun0912.ted:tedpermission-rx2:2.2.3"
 
     implementation "org.koin:koin-android-architecture:0.8.2"
 }

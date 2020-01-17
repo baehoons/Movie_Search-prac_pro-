@@ -1,5 +1,6 @@
 package com.example.searchvideo.Controller
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.databinding.ObservableField
@@ -132,7 +134,7 @@ class VideoOperationController (
                     }
                 }
 
-                override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
                     preProcessRejected()
                 }
 
@@ -145,7 +147,7 @@ class VideoOperationController (
             .setRationaleMessage("This application needs storage permission to download")
             .setDeniedMessage("Permission denied.")
             .setGotoSettingButton(true)
-            .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .check()
     }
 
@@ -154,6 +156,9 @@ class VideoOperationController (
         var currentImageCount = 0
         val directoryToStore =
             if (videoOperation == VideoOpertation.SHARE) mShareDirectory else mDownloadDirectory
+
+        Log.d("DEBUG","DEBUG")
+
         mIsOnOperation.set(true)
         mCompositeDisposable.add(
             Completable.create { emitter ->

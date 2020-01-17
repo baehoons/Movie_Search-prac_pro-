@@ -17,7 +17,7 @@ object BindingUtils {
     @BindingAdapter("thumbnail")
     fun loadThumbnail(view : ImageView, thumbnail : String) {
         Glide.with(view.context)
-            .load(thumbnail).apply(RequestOptions.circleCropTransform())
+            .load(thumbnail).apply(RequestOptions.centerCropTransform())
             .into(view)
     }
 

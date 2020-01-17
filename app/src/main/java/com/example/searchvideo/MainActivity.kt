@@ -148,7 +148,7 @@ class MainActivity :BaseActivity_ko<ActivityMainBinding, MainViewModel>() {
         mSearchView = menu!!.findItem(R.id.menuMainAppBarSearch).actionView as SearchView
         mSearchView.apply {
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
-            queryHint = "Image Search"
+            queryHint = "영상 검색"
             setOnQueryTextFocusChangeListener{
                 _, isFocused ->
                 mMainViewModel.mFragmentVisibility.set(!isFocused)

@@ -19,21 +19,9 @@ class ListItemViewModel (
     private val mApplication = application
     lateinit var mKakaoImageModel : VideoSearchResponse.Document
     lateinit var mImageSizePercentage : ObservableField<Float>
-    lateinit var mIsOnMultipleSelectionMode : ObservableField<Boolean>
     lateinit var mIsItemSelected : ObservableField<Boolean>
-    private var mClickModeChanged = false
-
-    var thumb = R.id.imageVerticalGuidelineRight
 
 
-
-    fun setEventHandlerOnSelectionModeChanged() {
-        mIsOnMultipleSelectionMode.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                if(!mIsOnMultipleSelectionMode.get()!!) mIsItemSelected.set(false)
-            }
-        })
-    }
 
     fun boundOnImageItemClick() {
 

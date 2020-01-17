@@ -62,7 +62,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
                         if (target == MainBroadcastPreference.Target.PreDefinedValues.VIDEO_LIST) {
                             when (actionString) {
 
-                                // 새로운 검색어 입력됨
+
                                 MainBroadcastPreference.Action.NEW_SEARCH_QUERY_INPUT -> {
                                     val queryKeyword =
                                         intent.getStringExtra(MainBroadcastPreference.Extra.QueryString.KEY)
@@ -71,67 +71,14 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
                                     }
                                 }
 
-                                // 정렬 기준이 변경됨
+
                                 MainBroadcastPreference.Action.SORT_OPTION_CHANGED -> {
                                     val sortOption =
                                         intent.getSerializableExtra(MainBroadcastPreference.Extra.SortOption.KEY) as KakaoSearchSortEnum
                                     mVideoListViewModel.changeSortOption(sortOption)
                                 }
 
-//                                MainBroadcastPreference.Action.DISPLAY_COUNT_CHANGED -> {
-//                                    val displayCount = intent.getIntExtra(
-//                                        MainBroadcastPreference.Extra.DisplayCount.KEY,
-//                                        30
-//                                    )
-//                                    mVideoListViewModel.changeDisplayCount(displayCount)
-//                                }
 
-                                // 사용자가 화면을 Pinch 함(줌 인 혹은 줌 아웃)
-//                                MainBroadcastPreference.Action.PINCHING -> {
-//                                    when (intent.getSerializableExtra(MainBroadcastPreference.Extra.PinchingOperation.KEY)) {
-//                                        MainBroadcastPreference.Extra.PinchingOperation.PreDefinedValues.ZOOM_IN -> mImageListRecyclerAdapter.resizeOnPinch(
-//                                            true
-//                                        ) { setRecyclerViewLayoutManager() }
-//                                        MainBroadcastPreference.Extra.PinchingOperation.PreDefinedValues.ZOOM_OUT -> mImageListRecyclerAdapter.resizeOnPinch(
-//                                            false
-//                                        ) { setRecyclerViewLayoutManager() }
-//                                    }
-//                                }
-
-                                // Pinch 중에는 Refresh 비활성화
-//                                MainBroadcastPreference.Action.PINCH_STATE -> {
-//                                    when (intent.getSerializableExtra(MainBroadcastPreference.Extra.PinchingState.KEY)) {
-//                                        MainBroadcastPreference.Extra.PinchingState.PreDefinedValues.PINCH_START -> mViewDataBinding.imageListRefreshLayout.isEnabled =
-//                                            false
-//                                        MainBroadcastPreference.Extra.PinchingState.PreDefinedValues.PINCH_END -> {
-//                                            if (!mVideoListViewModel.mFilterMenuVisibility.get()!!) {
-//                                                mRefreshDisableHandler.removeCallbacksAndMessages(
-//                                                    null
-//                                                )
-//                                                mRefreshDisableHandler.postDelayed({
-//                                                    mViewDataBinding.imageListRefreshLayout.isEnabled =
-//                                                        true
-//                                                }, 300)
-//                                            }
-//                                        }
-//                                    }
-//                                }
-
-                                // 이미지 선택 모드(단일 & 다중) 변경 알림
-//                                MainBroadcastPreference.Action.IMAGE_ITEM_SELECTION_MODE_CHANGED -> {
-//                                    when (intent.getSerializableExtra(MainBroadcastPreference.Extra.ImageItemSelectionMode.KEY)) {
-//                                        MainBroadcastPreference.Extra.ImageItemSelectionMode.PreDefinedValues.MULTI_SELECTION_MODE -> {
-//                                            mImageListRecyclerAdapter.setSelectionMode(true)
-//                                            showFilterMenuWithAnimation()
-//                                        }
-//                                        MainBroadcastPreference.Extra.ImageItemSelectionMode.PreDefinedValues.SIGNLE_SELECTION_MODE -> {
-//                                            mImageListRecyclerAdapter.setSelectionMode(false)
-//                                            hideFilterMenuWithAnimation()
-//                                        }
-//                                    }
-//                                }
-
-                                // 백 버튼 눌림
                                 MainBroadcastPreference.Action.BACK_BUTTON_PRESSED -> {
                                     if (mVideoListViewModel.mPageNumber > 1) mVideoListViewModel.boundOnPrevPageButtonClick()
                                     else mActivity?.sendBroadcast(Intent().apply {
@@ -280,7 +227,7 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
         viewDataBinding.videoListRefreshLayout.isEnabled = false
     }
 
-    /** Filter Menu 를 Translation 애니메이션과 함께 화면에서 제거합니다. */
+
     private fun hideFilterMenuWithAnimation() {
         if(mVideoListViewModel.mFilterMenuVisibility.get()!!) {
             val filterDisappearAnim = AnimationUtils.loadAnimation(context,
@@ -300,7 +247,6 @@ class ListFragment : BaseFragment<FragmentListBinding, ListViewModel>() {
 
 
     companion object {
-        /** 새로운 프래그먼트를 생성합니다. */
         fun newInstance() = ListFragment()
     }
 }

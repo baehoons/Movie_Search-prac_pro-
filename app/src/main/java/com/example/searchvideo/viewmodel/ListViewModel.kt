@@ -77,15 +77,6 @@ class ListViewModel(application: Application, mPreferenceUtils: PreferenceUtils)
         if(::mRecentQueryKeyword.isInitialized) onQueryChangedListener(mRecentQueryKeyword, mSortOption, mPageNumber, mDisplayCount)
     }
 
-    fun changeDisplayCount(displayCount : Int) {
-        val prevDisplayCount = mDisplayCount
-        mDisplayCount = displayCount
-        if(::mRecentQueryKeyword.isInitialized)  {
-            mPageNumber = kotlin.math.ceil(prevDisplayCount * mPageNumber / displayCount.toDouble()).toInt()
-            if(mPageNumber > maxPageNumber) mPageNumber = maxPageNumber
-            onQueryChangedListener(mRecentQueryKeyword, mSortOption, mPageNumber, mDisplayCount)
-        }
-    }
 
     fun refresh() {
         if(::mRecentQueryKeyword.isInitialized) {
@@ -93,23 +84,19 @@ class ListViewModel(application: Application, mPreferenceUtils: PreferenceUtils)
         }
     }
 
-    /** 필터 메뉴가 보이게 설정합니다.*/
+
     fun showFilterMenu() {
         mFilterMenuVisibility.set(true)
     }
 
-    /** 필터 메뉴가 보이지 않게 설정합니다.*/
     fun hideFilterMenu() {
         mFilterMenuVisibility.set(false)
     }
 
-    // Layout 과 바인딩 된 메소드
-    /** 이전 페이지로 이동합니다.*/
     fun boundOnPrevPageButtonClick() {
         onQueryChangedListener(mRecentQueryKeyword, mSortOption, mPageNumber - 1, mDisplayCount)
     }
 
-    /** 다음 페이지로 이동합니다.*/
     fun boundOnNextPageButtonClick() {
         onQueryChangedListener(mRecentQueryKeyword, mSortOption, mPageNumber + 1, mDisplayCount)
     }

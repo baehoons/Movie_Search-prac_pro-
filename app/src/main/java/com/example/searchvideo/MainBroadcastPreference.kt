@@ -60,18 +60,6 @@ object MainBroadcastPreference {
             /** 선택된 이미지 아이템 키 값 */
             const val KEY = "com.example.searchvideo.Extra.VideoItem.KEY"
         }
-        /** 변경된 이미지 선택 모드 */
-        object VideoItemSelectionMode {
-            /** 변경된 이미지 선택 모드 키 값 */
-            const val KEY = "com.example.searchvideo.Extra.VideoItemSelectionMode.KEY"
-            /** 미리 정의된 값 목록 */
-            enum class PreDefinedValues {
-                /** 다중 선택 모드 */
-                MULTI_SELECTION_MODE,
-                /** 일반 단일 선택 모드 */
-                SIGNLE_SELECTION_MODE,
-            }
-        }
 
         object VideoOperation {
             /** 이미지 다운로드/공유 정보 키 값 */

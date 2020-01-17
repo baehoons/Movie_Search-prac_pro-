@@ -25,7 +25,6 @@ import com.example.searchvideo.databinding.FragmentDetailBinding
 @Suppress("SetJavaScriptEnabled")
 class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
 
-    private lateinit var webView: WebView
     private val mVideoDetailViewModel : DetailViewModel = DetailViewModel(application, videoModel, mVideoOperationController)
     private val mVideoDetailBroadcastReceiver = object : BroadcastReceiver(){
         override fun onReceive(p0: Context?, intent: Intent?) {
@@ -113,13 +112,6 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         }
     }
 
-    /**
-     * 웹 뷰의 기본적인 설정들을 지정합니다.
-     * 1. JS 사용 가능 여부 - True
-     * 2. POP Up 창 사용 가능 여부 - True (이 부분은 조금 더 고려해봐야 합니다.)
-     * 3. 웹의 사진을 표현할지 여부 - True
-     * 4. 모바일 지원이 안 되는 웹을 모바일 화면에 끼워 맞추기 - True
-     */
     private fun setWebView() {
         viewDataBinding.videoDetailWebView.settings.apply {
             javaScriptEnabled = true
@@ -133,11 +125,6 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
     }
 
 
-    /**
-     * View Model 에서 추가적으로 지정해줘야 하는 리스너들을 등록합니다.
-     * 현재 상세정보 버튼을 눌렸을 경우 Fragment 에서 처리하도록 하며
-     * Dialog 에 ImageModel 의 정보를 담아서 화면에 보이도록 합니다.
-     */
     private fun setViewModelListener() {
         var play_time_h:Int = mKakaoVideoModel.play_time/(60*60)
         var play_time_m:Int = (mKakaoVideoModel.play_time-(play_time_h*60*60))/60
@@ -160,7 +147,6 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
     }
 
     companion object {
-        /** 새로운 프래그먼트를 생성합니다. */
         fun newInstance(application: Application, videoModel: VideoSearchResponse.Document, videoOperationController: VideoOperationController) =
             DetailFragment(
                 application,

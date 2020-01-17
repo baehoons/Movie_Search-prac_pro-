@@ -47,30 +47,30 @@ class ListAdapter(
     data class VideoItem(var VideoUrl:String , var documentUrl:String)
 
 
-    class Videoholder(parent: ViewGroup):RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_main, parent, false)
-    ) {
-        fun onBind(item:VideoItem){
-            lateinit var mKakaoVideoModel :VideoSearchResponse.Document
-
-            itemView.run {
-                Picasso.with(context).load(item.VideoUrl).placeholder(R.drawable.ic_image_black_24dp).resize(800,700).into(video_view)
-                video_view.setOnClickListener {
-                    context.sendBroadcast(Intent().apply {
-                        fun boundOnImageItemClick() {
-                            context.sendBroadcast(Intent().apply {
-                                action = MainBroadcastPreference.Action.VIDEO_ITEM_CLICKED
-                                putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
-                                putExtra(MainBroadcastPreference.Extra.VideoItem.KEY, mKakaoVideoModel)
-                            })
-                        }
-                        boundOnImageItemClick()
-                    })
-//                    ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse(item.documentUrl)), null)
-                }
-            }
-        }
-    }
+//    class Videoholder(parent: ViewGroup):RecyclerView.ViewHolder(
+//        LayoutInflater.from(parent.context).inflate(R.layout.item_main, parent, false)
+//    ) {
+//        fun onBind(item:VideoItem){
+//            lateinit var mKakaoVideoModel :VideoSearchResponse.Document
+//
+//            itemView.run {
+//                Picasso.with(context).load(item.VideoUrl).placeholder(R.drawable.ic_image_black_24dp).resize(800,700).into(video_view)
+//                video_view.setOnClickListener {
+//                    context.sendBroadcast(Intent().apply {
+//                        fun boundOnImageItemClick() {
+//                            context.sendBroadcast(Intent().apply {
+//                                action = MainBroadcastPreference.Action.VIDEO_ITEM_CLICKED
+//                                putExtra(MainBroadcastPreference.Target.KEY, MainBroadcastPreference.Target.PreDefinedValues.MAIN_ACTIVITY)
+//                                putExtra(MainBroadcastPreference.Extra.VideoItem.KEY, mKakaoVideoModel)
+//                            })
+//                        }
+//                        boundOnImageItemClick()
+//                    })
+////                    ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse(item.documentUrl)), null)
+//                }
+//            }
+//        }
+//    }
 
 
 
@@ -138,7 +138,6 @@ class ListAdapter(
         private val binding : ItemVideoListBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        /** 이미지 뷰 Layout 바인딩에 viewModel 을 입력합니다. */
         fun bind(item : ListItemViewModel) {
             binding.apply {
                 viewModel = item

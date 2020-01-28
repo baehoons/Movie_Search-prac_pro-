@@ -57,7 +57,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="145dp"
-            android:onClick="@{() -> viewModel.boundOnShareButtonClick()}"
             app:layout_anchor="@id/videoDetailAppBar"
             app:layout_anchorGravity="bottom|end"
             app:srcCompat="@drawable/ic_share" />

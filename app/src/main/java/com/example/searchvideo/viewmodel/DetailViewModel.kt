@@ -1,15 +1,31 @@
 package com.example.searchvideo.viewmodel
 
 import android.app.Application
+import android.content.ClipData
+import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.view.View
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat.getExternalCacheDirs
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
+import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.databinding.ObservableField
-import com.example.searchvideo.base.BaseViewModel
+import com.example.searchvideo.BuildConfig
 import com.example.searchvideo.Controller.VideoOperationController
+import com.example.searchvideo.MainActivity
 import com.example.searchvideo.Model.VideoSearchResponse
+import com.example.searchvideo.R
+import com.example.searchvideo.base.BaseViewModel
 import com.example.searchvideo.util.ConstantUtils
+import java.io.File
+import java.io.FileOutputStream
+
 
 @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
 class DetailViewModel (
@@ -37,7 +53,11 @@ class DetailViewModel (
         }
     }
 
+
+
     fun boundOnShareButtonClick() {
+
+
         if(!mVideoOperationController.mIsOnOperation.get()!!) {
             mVideoOperationController.addImageModel(mKakaoVideoModel)
             mVideoOperationController.startShare()
@@ -51,10 +71,14 @@ class DetailViewModel (
     }
 
     fun boundOnDownloadButtonClick() {
+
+
         if(!mVideoOperationController.mIsOnOperation.get()!!) {
             mVideoOperationController.addImageModel(mKakaoVideoModel)
             mVideoOperationController.startDownload()
         }
+
     }
+
 
 }

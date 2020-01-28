@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Handler
+import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -21,9 +22,10 @@ import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.R
 import com.example.searchvideo.viewmodel.DetailViewModel
 import com.example.searchvideo.databinding.FragmentDetailBinding
+import kotlinx.android.synthetic.main.fragment_detail.*
 
 @Suppress("SetJavaScriptEnabled")
-class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
+class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, private val mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
 
     private val mVideoDetailViewModel : DetailViewModel = DetailViewModel(application, videoModel, mVideoOperationController)
     private val mVideoDetailBroadcastReceiver = object : BroadcastReceiver(){
@@ -70,6 +72,7 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         setCollapsingToolBar()
         setWebView()
         setViewModelListener()
+        cli()
     }
     var mKakaoVideoModel : VideoSearchResponse.Document = videoModel
 
@@ -122,6 +125,20 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
         }
         Handler().postDelayed({ mVideoDetailViewModel.mIsWebViewLoading.set(false) }, 3000)
+    }
+    private fun cli(){
+        videoDetailShareButton.setOnClickListener{
+            var context:Context = this.requireContext()
+            val shareIntent= Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, mKakaoVideoModel.url)
+                type ="text/plain"
+            }
+            val sharedIntent = Intent.createChooser(shareIntent,null)
+            context.startActivity(sharedIntent)
+        }
+
+
     }
 
 

@@ -33,20 +33,20 @@ import java.util.ArrayList
 
 @Suppress(ConstantUtils.SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
 class VideoOperationController (
+
     private val application: Application
 ) {
 
-    private val mDownloadDirectory: File by lazy {
+
+    private val mDownloadDirectory : File by lazy {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).also {
-            if (!it.exists()) it.mkdir()
+            if(!it.exists()) it.mkdir()
         }
     }
-
-    private val mShareDirectory: File by lazy {
+    private val mShareDirectory : File by lazy {
         File(application.filesDir.canonicalPath + "/sharedImages").also {
-            if (!it.exists()) it.mkdir()
+            if(!it.exists()) it.mkdir()
         }
-
     }
 
     private val mImageModelMap: HashMap<String, VideoSearchResponse.Document> = HashMap()
@@ -67,6 +67,12 @@ class VideoOperationController (
 
     fun addImageModel(videoModel: VideoSearchResponse.Document) =
         mImageModelMap.put(videoModel.thumbnail, videoModel)
+
+    fun addurleModel(videoModel: VideoSearchResponse.Document) =
+        mImageModelMap.put(videoModel.url, videoModel)
+
+    fun addtitle(videoModel: VideoSearchResponse.Document) =
+        mImageModelMap.put(videoModel.title, videoModel)
 
     fun removeVideoModel(videoModel: VideoSearchResponse.Document) =
         mImageModelMap.remove(videoModel.thumbnail)
@@ -147,18 +153,14 @@ class VideoOperationController (
             .setRationaleMessage("This application needs storage permission to download")
             .setDeniedMessage("Permission denied.")
             .setGotoSettingButton(true)
-            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.INTERNET,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.ACCESS_WIFI_STATE)
             .check()
     }
 
     private fun loadImageTo(videoOperation: VideoOpertation) {
         val totalImageCount = mClonedImageModelMap.size
         var currentImageCount = 0
-        val directoryToStore =
-            if (videoOperation == VideoOpertation.SHARE) mShareDirectory else mDownloadDirectory
-
-        Log.d("DEBUG","DEBUG")
-
+        val directoryToStore = if (videoOperation == VideoOpertation.SHARE) mShareDirectory else mDownloadDirectory
         mIsOnOperation.set(true)
         mCompositeDisposable.add(
             Completable.create { emitter ->
@@ -171,26 +173,15 @@ class VideoOperationController (
                                 currentImageCount++
                                 if (currentImageCount == totalImageCount) emitter.onComplete()
                             }
-
                             override fun onLoadCleared(placeholder: Drawable?) = Unit
-                            override fun onResourceReady(
-                                bitmapImage: Bitmap,
-                                transition: Transition<in Bitmap>?
-                            ) {
-                                val imageFile = File(
-                                    directoryToStore,
-                                    application.getString(
-                                        R.string.download_image_prefix,
-                                        it.value.hashCode()
-                                    ) + ".jpg"
-                                )
+                            override fun onResourceReady(bitmapImage: Bitmap, transition: Transition<in Bitmap>?) {
+                                val imageFile = File(directoryToStore, application.getString(R.string.download_image_prefix, it.value.hashCode()) + ".jpg")
                                 try {
                                     FileOutputStream(imageFile).also { fileOutputStream ->
                                         bitmapImage.compress(
                                             Bitmap.CompressFormat.JPEG,
                                             100,
-                                            fileOutputStream
-                                        )
+                                            fileOutputStream)
                                         fileOutputStream.close()
                                         if (videoOperation == VideoOpertation.DOWNLOAD) notifyAndroidNewImageAdded(
                                             imageFile
@@ -223,18 +214,10 @@ class VideoOperationController (
                                 )
                                 putExtra(Intent.EXTRA_INTENT, Intent().apply {
                                     action = Intent.ACTION_SEND_MULTIPLE
-                                    type = "image/jpeg"
-                                    putParcelableArrayListExtra(
-                                        Intent.EXTRA_STREAM,
-                                        ArrayList<Uri>().also {
+                                    type = "image/*"
+                                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList<Uri>().also {
                                             mShareDirectory.listFiles().forEach { eachFileToShare ->
-                                                if (eachFileToShare.extension == "jpg") it.add(
-                                                    FileProvider.getUriForFile(
-                                                        application,
-                                                        "com.example.searchvideo",
-                                                        eachFileToShare
-                                                    )
-                                                )
+                                                if (eachFileToShare.extension == "jpg") it.add(FileProvider.getUriForFile(application, "com.example.searchvideo", eachFileToShare))
                                             }
                                         })
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -6,26 +6,40 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Environment
 import android.os.Handler
-import android.view.View
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.util.Base64
+import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
-
-import com.example.searchvideo.base.BaseFragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.searchvideo.Controller.VideoOperationController
 import com.example.searchvideo.MainBroadcastPreference
 import com.example.searchvideo.Model.VideoSearchResponse
 import com.example.searchvideo.R
-import com.example.searchvideo.viewmodel.DetailViewModel
+import com.example.searchvideo.base.BaseFragment
 import com.example.searchvideo.databinding.FragmentDetailBinding
+import com.example.searchvideo.viewmodel.DetailViewModel
 import kotlinx.android.synthetic.main.fragment_detail.*
+import java.io.*
+import java.lang.Exception
+import java.lang.NullPointerException
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.net.URLConnection
+
 
 @Suppress("SetJavaScriptEnabled")
-class DetailFragment (application: Application ,videoModel:VideoSearchResponse.Document, private val mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
+class DetailFragment (private val application: Application ,videoModel:VideoSearchResponse.Document, private val mVideoOperationController: VideoOperationController):BaseFragment<FragmentDetailBinding, DetailViewModel>(){
 
     private val mVideoDetailViewModel : DetailViewModel = DetailViewModel(application, videoModel, mVideoOperationController)
     private val mVideoDetailBroadcastReceiver = object : BroadcastReceiver(){
@@ -68,11 +82,13 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
 
 
     override fun setUp() {
+
         setBroadcastReceiver()
         setCollapsingToolBar()
         setWebView()
         setViewModelListener()
-        cli()
+        click_share()
+        click_down()
     }
     var mKakaoVideoModel : VideoSearchResponse.Document = videoModel
 
@@ -126,9 +142,9 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
         }
         Handler().postDelayed({ mVideoDetailViewModel.mIsWebViewLoading.set(false) }, 3000)
     }
-    private fun cli(){
+    private fun click_share(){
+        var context:Context = this.requireContext()
         videoDetailShareButton.setOnClickListener{
-            var context:Context = this.requireContext()
             val shareIntent= Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, mKakaoVideoModel.url)
@@ -137,8 +153,48 @@ class DetailFragment (application: Application ,videoModel:VideoSearchResponse.D
             val sharedIntent = Intent.createChooser(shareIntent,null)
             context.startActivity(sharedIntent)
         }
+    }
+    private fun click_down() {
+
+        val url: String = mKakaoVideoModel.thumbnail
+
+        val imageBytes:ByteArray ?= Base64.decode(url, Base64.NO_WRAP)
+
+        val imageName: String = mKakaoVideoModel.title
+        Log.d("DetailFragment", "download begining");
+        Log.d("DetailFragment", "download url:" + url);
+        Log.d("DetailFragment", "download byte:" + imageBytes);
+        Log.d("DetailFragment", "downloaded file name:" + imageName);
+        val mDownloadDirectory : File by lazy {
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).also {
+                if(!it.exists()) it.mkdir()
+            }
+        }
 
 
+        videoDetailDownloadButton.setOnClickListener {
+
+            Glide.with(application)
+                .asBitmap()
+                .load(url)
+                .into(object :CustomTarget<Bitmap>(){
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val imageFile = File(mDownloadDirectory,imageName+".jpg")
+                        try{
+                            FileOutputStream(imageFile).also {fileOutputStream ->
+                                resource.compress(Bitmap.CompressFormat.JPEG,100,fileOutputStream)
+                                fileOutputStream.close()
+                                Toast.makeText(application, "다운로드 완료", Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e:Exception) {e.printStackTrace()}
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+                })
+
+        }
     }
 
 

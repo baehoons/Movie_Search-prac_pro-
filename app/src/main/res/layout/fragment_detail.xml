@@ -76,7 +76,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="15dp"
-            android:onClick="@{() -> viewModel.boundOnDownloadButtonClick()}"
             app:layout_anchor="@id/videoDetailAppBar"
             app:layout_anchorGravity="bottom|end"
             app:srcCompat="@drawable/ic_download" />

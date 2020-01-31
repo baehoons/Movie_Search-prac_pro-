@@ -161,6 +161,10 @@ class DetailFragment (private val application: Application ,videoModel:VideoSear
         val imageBytes:ByteArray ?= Base64.decode(url, Base64.NO_WRAP)
 
         val imageName: String = mKakaoVideoModel.title
+        val imageNames:String  = imageName.replace(",","").replace(".","").replace("","").replace("'","").replace("(","")
+            .replace(")","").replace("[","").replace("]","").replace("{","").replace("}","")
+            .replace(":","").replace(";","").replace("~","").replace("!","").replace("^","").replace("*","")
+            .replace("/","").replace("<","").replace(">","").trim()
         Log.d("DetailFragment", "download begining");
         Log.d("DetailFragment", "download url:" + url);
         Log.d("DetailFragment", "download byte:" + imageBytes);
@@ -179,7 +183,7 @@ class DetailFragment (private val application: Application ,videoModel:VideoSear
                 .load(url)
                 .into(object :CustomTarget<Bitmap>(){
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        val imageFile = File(mDownloadDirectory,imageName+".jpg")
+                        val imageFile = File(mDownloadDirectory,imageNames+".jpg")
                         try{
                             FileOutputStream(imageFile).also {fileOutputStream ->
                                 resource.compress(Bitmap.CompressFormat.JPEG,100,fileOutputStream)
